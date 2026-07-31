@@ -90,23 +90,16 @@ public class FileStorageService {
         if (canConvert) {
             String jpgName = base + ".jpg";
             Path jpg = uploadDir.resolve(jpgName).normalize();
-            try {
-                Process p = new ProcessBuilder(
-                        "convert", tmp.toString() + "[0]",
-                        "-auto-orient", "-resize", "2000x2000>", "-quality", "85",
-                        jpg.toString())
-                        .redirectErrorStream(true)
-                        .start();
-                boolean finished = p.waitFor(90, TimeUnit.SECONDS);
-                if (finished && p.exitValue() == 0 && Files.exists(jpg) && Files.size(jpg) > 0) {
-                    Files.deleteIfExists(tmp);
-                    return jpgName;
-                }
-                log.warn("Image conversion failed (exit={}), keeping original", finished ? p.exitValue() : "timeout");
-                Files.deleteIfExists(jpg);
-            } catch (Exception e) {
-                log.warn("Image conversion error, keeping original: {}", e.toString());
+            boolean isHeic = ext.equals(".heic") || ext.equals(".heif");
+            // HEIC needs the dedicated heif-convert; everything else goes via ImageMagick.
+            boolean ok = isHeic ? heicToJpeg(tmp, jpg, base) : magickToJpeg(tmp, jpg);
+            if (!ok) ok = isHeic ? magickToJpeg(tmp, jpg) : heicToJpeg(tmp, jpg, base);
+            if (ok) {
+                try { Files.deleteIfExists(tmp); } catch (IOException ignore) { }
+                return jpgName;
             }
+            try { Files.deleteIfExists(jpg); } catch (IOException ignore) { }
+            log.warn("Could not convert upload '{}' to JPEG; keeping original", original);
         }
 
         // Fallback: keep the original file under a clean stored name.
@@ -118,5 +111,53 @@ public class FileStorageService {
             try { Files.deleteIfExists(tmp); } catch (IOException ignore) { /* best effort */ }
             throw new UncheckedIOException("Failed to store upload", e);
         }
+    }
+
+    /** ImageMagick: transcode to JPEG, auto-orient, cap dimensions. */
+    private boolean magickToJpeg(Path src, Path out) {
+        return run(120, "convert", src.toString() + "[0]",
+                "-auto-orient", "-resize", "2000x2000>", "-quality", "85", out.toString())
+                && existsNonEmpty(out);
+    }
+
+    /** libheif's heif-convert for iPhone HEIC, then ImageMagick to orient/resize. */
+    private boolean heicToJpeg(Path src, Path out, String base) {
+        Path mid = uploadDir.resolve(base + "-mid.jpg").normalize();
+        try {
+            if (!run(120, "heif-convert", src.toString(), mid.toString()) || !existsNonEmpty(mid)) {
+                return false;
+            }
+            if (magickToJpeg(mid, out)) return true;
+            // ImageMagick step failed — use the full-size heif-convert output as-is.
+            Files.move(mid, out, StandardCopyOption.REPLACE_EXISTING);
+            return existsNonEmpty(out);
+        } catch (IOException e) {
+            log.warn("heicToJpeg error: {}", e.toString());
+            return false;
+        } finally {
+            try { Files.deleteIfExists(mid); } catch (IOException ignore) { }
+        }
+    }
+
+    /** Runs an external command, returns true on exit code 0 within the timeout. */
+    private boolean run(int timeoutSeconds, String... cmd) {
+        try {
+            Process p = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+            boolean finished = p.waitFor(timeoutSeconds, TimeUnit.SECONDS);
+            if (!finished) { p.destroyForcibly(); log.warn("Command timed out: {}", cmd[0]); return false; }
+            if (p.exitValue() != 0) {
+                String out = new String(p.getInputStream().readAllBytes()).strip();
+                log.warn("Command {} failed (exit {}): {}", cmd[0], p.exitValue(), out);
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            log.warn("Command {} error: {}", cmd.length > 0 ? cmd[0] : "?", e.toString());
+            return false;
+        }
+    }
+
+    private boolean existsNonEmpty(Path p) {
+        try { return Files.exists(p) && Files.size(p) > 0; } catch (IOException e) { return false; }
     }
 }

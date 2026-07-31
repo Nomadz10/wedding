@@ -10,9 +10,10 @@ RUN mvn -q -DskipTests package
 
 # ---- Stage 2: slim runtime image ----
 FROM eclipse-temurin:21-jre
-# ImageMagick + libheif so uploaded iPhone HEIC/HEIF photos can be converted to JPEG.
+# ImageMagick for general image transcoding + libheif-examples (heif-convert)
+# so uploaded iPhone HEIC/HEIF photos can be converted to JPEG.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends imagemagick libheif1 \
+    && apt-get install -y --no-install-recommends imagemagick libheif1 libheif-examples \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/target/wedding-1.0.0.jar app.jar
