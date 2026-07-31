@@ -76,21 +76,31 @@ On first boot it seeds your events and guest list into the database.
 
 ---
 
-## 5. Keep uploaded event photos (persistent volume)
-Railway's disk is wiped on every redeploy, so uploaded photos need a **volume**:
-1. App service → **Settings → Volumes → New Volume**.
-2. Mount path: **`/data`** (matches the `/data/uploads` you set above).
-3. Redeploy. Photos you upload via `/admin` now survive redeploys.
+> Everything below lives **inside your `wedding` service card** (click that card on
+> the project canvas), *not* in the project's own settings and *not* the Postgres card.
+> Railway moves these around, so alternate paths are given.
 
-> Alternatively, skip uploads entirely and put photos directly in
-> `src/main/resources/static/images/` and reference them — then you don't need a volume.
+## 5. Get it on the internet (domain)
+1. Click the **`wedding`** service card → the **Settings** tab.
+2. Scroll to the **Networking** section → under **Public Networking**, click **Generate Domain**.
+3. If it asks which **port**, enter **`8080`**.
+4. Railway gives you a free URL like `wedding-production-xxxx.up.railway.app`.
+5. Open it — your site should be live. Test the RSVP flow and `/admin` login.
 
 ---
 
-## 6. Get it on the internet
-1. App service → **Settings → Networking → Generate Domain**.
-2. Railway gives you a free URL like `wedding-production-xxxx.up.railway.app`.
-3. Open it — your site should be live. Test the RSVP flow and `/admin` login.
+## 6. Keep uploaded photos (persistent volume)
+Railway's disk is wiped on every redeploy, so guest + event photos need a **volume**.
+Railway moved volume creation out of Settings — use whichever works:
+- **Right-click the `wedding` service card** on the canvas → **Attach Volume** (or "Create Volume").
+- Or press **Ctrl/Cmd + K** (command palette) → type **Volume**.
+- Or the canvas **`+ Create` / `+ New`** button → **Volume**.
+
+Set the **Mount path** to **`/data`** (matches the `/data/uploads` env var from step 4), then redeploy.
+
+> Not blocked without it: you can skip the volume for the first deploy and add it later —
+> photos just won't survive a *redeploy* until it's attached. (Or skip uploads entirely and
+> put photos in `src/main/resources/static/images/` and reference them directly.)
 
 ---
 
@@ -119,3 +129,6 @@ Railway's disk is wiped on every redeploy, so uploaded photos need a **volume**:
 ## Rough cost
 - Railway: ~$5/month (app + small Postgres) for the months you keep it live.
 - Domain: ~$10–15/year.
+
+addresses
+rsvp by event separation

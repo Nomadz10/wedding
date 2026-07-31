@@ -15,11 +15,11 @@
     <p class="date">November 23&ndash;25, 2026</p>
 
     <div class="hero-actions">
-        <a class="btn" th:href="@{/rsvp}">RSVP</a>
+        <a th:if="${rsvpEnabled}" class="btn" th:href="@{/rsvp}">RSVP</a>
         <a class="btn outline" th:href="@{/events}">View Schedule</a>
     </div>
 
-    <div>
+    <div th:if="${rsvpEnabled}">
         <span th:if="${rsvpOpen}" class="deadline">
             &#128197; RSVP by <strong style="margin-left:4px;" th:text="${#temporals.format(rsvpDeadline, 'MMMM d, yyyy')}">August 20, 2026</strong>
         </span>

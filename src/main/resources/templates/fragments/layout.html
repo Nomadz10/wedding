@@ -20,7 +20,7 @@
             <a th:href="@{/}">Home</a>
             <a th:href="@{/events}">Events</a>
             <a th:href="@{/gallery}">Photos</a>
-            <a class="cta" th:href="@{/rsvp}">RSVP</a>
+            <a th:if="${rsvpEnabled}" class="cta" th:href="@{/rsvp}">RSVP</a>
         </div>
     </div>
 </nav>

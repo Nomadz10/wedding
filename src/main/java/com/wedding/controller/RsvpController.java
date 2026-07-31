@@ -25,10 +25,14 @@ public class RsvpController {
     private final GuestService guestService;
     private final LocalDate rsvpDeadline;
 
+    private final boolean rsvpEnabled;
+
     public RsvpController(GuestService guestService,
-                          @Value("${wedding.rsvp.deadline}") String deadline) {
+                          @Value("${wedding.rsvp.deadline}") String deadline,
+                          @Value("${wedding.rsvp.enabled:true}") boolean rsvpEnabled) {
         this.guestService = guestService;
         this.rsvpDeadline = LocalDate.parse(deadline);
+        this.rsvpEnabled = rsvpEnabled;
     }
 
     private boolean rsvpClosed() {
@@ -38,6 +42,7 @@ public class RsvpController {
     /** Step 1: the login form. */
     @GetMapping("/login")
     public String loginForm(HttpSession session) {
+        if (!rsvpEnabled) return "redirect:/";
         if (session.getAttribute(GUEST_SESSION_KEY) != null) {
             return "redirect:/rsvp";
         }
@@ -50,6 +55,7 @@ public class RsvpController {
                         @RequestParam String lastName,
                         HttpSession session,
                         Model model) {
+        if (!rsvpEnabled) return "redirect:/";
         Optional<Guest> match = guestService.findByName(firstName, lastName);
         if (match.isEmpty()) {
             model.addAttribute("firstName", firstName);
@@ -66,12 +72,14 @@ public class RsvpController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.removeAttribute(GUEST_SESSION_KEY);
+        if (!rsvpEnabled) return "redirect:/";
         return "redirect:/rsvp/login";
     }
 
     /** Step 2: the guest's home — RSVP form, or their booked info if the room is set. */
     @GetMapping
     public String dashboard(HttpSession session, Model model) {
+        if (!rsvpEnabled) return "redirect:/";
         Guest guest = currentGuest(session);
         if (guest == null) return "redirect:/rsvp/login";
         model.addAttribute("guest", guest);
@@ -86,6 +94,7 @@ public class RsvpController {
                          @RequestParam(required = false) String plusOneName,
                          @RequestParam(required = false) String notes,
                          Model model) {
+        if (!rsvpEnabled) return "redirect:/";
         Guest guest = currentGuest(session);
         if (guest == null) return "redirect:/rsvp/login";
 
@@ -113,6 +122,7 @@ public class RsvpController {
     /** Step 3: the guest's booked details (room + personalised schedule). */
     @GetMapping("/my-info")
     public String myInfo(HttpSession session, Model model) {
+        if (!rsvpEnabled) return "redirect:/";
         Guest guest = currentGuest(session);
         if (guest == null) return "redirect:/rsvp/login";
         model.addAttribute("guest", guest);

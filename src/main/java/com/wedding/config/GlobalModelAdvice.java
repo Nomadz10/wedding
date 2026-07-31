@@ -14,14 +14,23 @@ import java.time.LocalDate;
 public class GlobalModelAdvice {
 
     private final LocalDate rsvpDeadline;
+    private final boolean rsvpEnabled;
 
-    public GlobalModelAdvice(@Value("${wedding.rsvp.deadline}") String deadline) {
+    public GlobalModelAdvice(@Value("${wedding.rsvp.deadline}") String deadline,
+                             @Value("${wedding.rsvp.enabled:true}") boolean rsvpEnabled) {
         this.rsvpDeadline = LocalDate.parse(deadline); // ISO yyyy-MM-dd
+        this.rsvpEnabled = rsvpEnabled;
     }
 
     @ModelAttribute("rsvpDeadline")
     public LocalDate rsvpDeadline() {
         return rsvpDeadline;
+    }
+
+    /** Whether the RSVP feature is shown to guests at all. */
+    @ModelAttribute("rsvpEnabled")
+    public boolean rsvpEnabled() {
+        return rsvpEnabled;
     }
 
     /** RSVP is open up to and including the deadline date. */

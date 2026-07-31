@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <p class="center mt">
+        <p class="center mt" th:if="${rsvpEnabled}">
             <a class="btn" th:href="@{/rsvp}" th:if="${rsvpOpen}">RSVP now</a>
             <span th:unless="${rsvpOpen}" class="deadline closed">RSVPs have now closed</span>
         </p>
