@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Suma & Vijay · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<header class="hero">
+    <p class="eyebrow">Together with their families</p>
+    <!-- Drop your own illustration at src/main/resources/static/images/couple.png
+         (transparent background works best) and it appears automatically.
+         Until then it falls back to the built-in vector placeholder. -->
+    <h1 class="names">Suma <img class="couple" th:src="@{/images/couple.png}"
+        onerror="this.onerror=null;this.src='/images/couple.svg';"
+        alt="Indian bride and groom exchanging garlands"> Vijay</h1>
+    <p class="date">November 23&ndash;25, 2026</p>
+
+    <div class="hero-actions">
+        <a class="btn" th:href="@{/rsvp}">RSVP</a>
+        <a class="btn outline" th:href="@{/events}">View Schedule</a>
+    </div>
+
+    <div>
+        <span th:if="${rsvpOpen}" class="deadline">
+            &#128197; RSVP by <strong style="margin-left:4px;" th:text="${#temporals.format(rsvpDeadline, 'MMMM d, yyyy')}">August 20, 2026</strong>
+        </span>
+        <span th:unless="${rsvpOpen}" class="deadline closed">
+            &#128197; RSVPs have now closed &mdash; please contact us directly
+        </span>
+    </div>
+</header>
+
+<section class="section">
+    <div class="container narrow center">
+        <p class="eyebrow" style="color:var(--accent-dark);letter-spacing:3px;text-transform:uppercase;font-size:.78rem;">Our Story</p>
+        <h2>We can't wait to celebrate with you</h2>
+        <p class="divider"><span style="color:var(--rose)">&#10022;</span> <span style="color:#e8a33d">&#10022;</span> <span style="color:#1f6f6b">&#10022;</span></p>
+        <p class="muted">
+            Three days of colour, music, and love &mdash; from the beats of the Sangeet to the
+            sacred vows under the mandap. We would be honoured to have you with us as we begin
+            this new chapter. Below you'll find the weekend's schedule and where to let us know
+            you're coming.
+        </p>
+    </div>
+</section>
+
+<section class="section alt">
+    <div class="container">
+        <div class="section-title">
+            <p class="eyebrow">The Celebrations</p>
+            <h2>Schedule of Events</h2>
+        </div>
+        <div th:replace="~{fragments/layout :: timelineByDay(${days})}"></div>
+        <p class="center mt"><a class="btn outline" th:href="@{/events}">Full details</a></p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <p class="eyebrow">Shared by our guests</p>
+            <h2>Our Moments</h2>
+            <p class="muted" style="max-width:520px;margin:0 auto;">
+                Captured a moment? Add it to our photo wall &mdash; scan the QR code at the wedding or tap below.
+            </p>
+        </div>
+
+        <!-- Real guest photos, padded out with decorative tiles until they arrive. -->
+        <div class="gallery">
+            <div class="tile" th:each="p : ${galleryPhotos}">
+                <img th:src="@{'/uploads/' + ${p.filename}}" alt="Guest photo" loading="lazy">
+            </div>
+            <th:block th:if="${#lists.size(galleryPhotos) < 4}"
+                      th:each="i : ${#numbers.sequence(1, 4 - #lists.size(galleryPhotos))}">
+                <div class="tile placeholder"></div>
+            </th:block>
+        </div>
+
+        <p class="center mt">
+            <a class="btn" th:href="@{/share}">&#128247; Add your photos</a>
+            <a class="btn outline" th:href="@{/gallery}">View the photo wall</a>
+        </p>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" viewBox="0 0 460 460">
+  <defs>
+    <g id="leaf">
+      <path d="M0 0 C26 -10 50 -6 66 14 C46 24 20 22 0 0 Z" fill="#7ba368"/>
+      <path d="M4 3 C24 9 44 13 60 15" stroke="#5f8450" stroke-width="1.4" fill="none"/>
+    </g>
+    <g id="rose">
+      <circle r="34" fill="#d98a9a"/>
+      <circle r="34" fill="none" stroke="#c9707f" stroke-width="1.5"/>
+      <path d="M-22 6 A22 22 0 0 1 22 6 A16 16 0 0 1 -14 14 A12 12 0 0 1 10 12" fill="none" stroke="#b85c6c" stroke-width="2.4"/>
+      <circle r="12" fill="#e8b3bd"/>
+      <circle r="5" fill="#b85c6c"/>
+    </g>
+    <g id="marigold">
+      <g fill="#e8a33d">
+        <circle cx="0" cy="-20" r="9"/><circle cx="14" cy="-14" r="9"/><circle cx="20" cy="0" r="9"/>
+        <circle cx="14" cy="14" r="9"/><circle cx="0" cy="20" r="9"/><circle cx="-14" cy="14" r="9"/>
+        <circle cx="-20" cy="0" r="9"/><circle cx="-14" cy="-14" r="9"/>
+      </g>
+      <circle r="13" fill="#d98829"/>
+      <circle r="6" fill="#b8641f"/>
+    </g>
+    <g id="bud">
+      <circle r="10" fill="#eec6cf"/><circle r="10" fill="none" stroke="#d98a9a" stroke-width="1.4"/>
+    </g>
+  </defs>
+
+  <!-- trailing stems & leaves reaching up toward the centre -->
+  <g stroke="#7ba368" stroke-width="3" fill="none" opacity="0.9">
+    <path d="M90 430 C150 340 210 300 300 250"/>
+    <path d="M70 420 C120 360 130 300 120 220"/>
+    <path d="M120 430 C200 380 250 330 340 300"/>
+  </g>
+  <use href="#leaf" transform="translate(160 300) rotate(-30)"/>
+  <use href="#leaf" transform="translate(120 250) rotate(-70) scale(0.9)"/>
+  <use href="#leaf" transform="translate(250 270) rotate(-10) scale(1.1)"/>
+  <use href="#leaf" transform="translate(300 320) rotate(20) scale(0.85)"/>
+  <use href="#leaf" transform="translate(95 350) rotate(-50) scale(0.8)"/>
+
+  <!-- blooms clustered toward the bottom-left corner -->
+  <use href="#marigold" transform="translate(300 250) scale(1.05)"/>
+  <use href="#bud" transform="translate(345 285)"/>
+  <use href="#rose" transform="translate(70 400) scale(1.25)"/>
+  <use href="#rose" transform="translate(160 405) scale(0.95)"/>
+  <use href="#marigold" transform="translate(120 340) scale(1.15)"/>
+  <use href="#rose" transform="translate(235 375) scale(1.1)"/>
+  <use href="#bud" transform="translate(200 320)"/>
+  <use href="#marigold" transform="translate(30 320) scale(0.9)"/>
+  <use href="#bud" transform="translate(285 350)"/>
+  <use href="#rose" transform="translate(330 405) scale(0.8)"/>
+</svg>

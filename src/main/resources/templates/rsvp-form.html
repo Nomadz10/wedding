@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Your RSVP · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<div class="form-page">
+    <div class="container narrow">
+        <div class="card">
+            <div class="center mb">
+                <p class="eyebrow" style="color:var(--accent-dark);letter-spacing:3px;text-transform:uppercase;font-size:.78rem;">Hello</p>
+                <h2 th:text="${guest.firstName} + ' ' + ${guest.lastName}">Jane Doe</h2>
+            </div>
+
+            <div th:if="${param.saved != null}" class="alert success">
+                Thank you — your RSVP has been saved. You can change it anytime before the deadline.
+            </div>
+            <div th:if="${error}" class="alert error" th:text="${error}">error</div>
+
+            <div th:if="${rsvpOpen}" class="alert info">
+                &#128197; Please reply by <strong th:text="${#temporals.format(rsvpDeadline, 'MMMM d, yyyy')}">August 20, 2026</strong>.
+            </div>
+            <div th:unless="${rsvpOpen}" class="alert warn">
+                The RSVP deadline has passed, so this can no longer be changed here.
+                Please contact us directly if you need to update your response.
+            </div>
+
+            <div th:if="${guest.roomBooked}" class="alert info">
+                Your accommodation has been arranged!
+                <a th:href="@{/rsvp/my-info}"><strong>View your room &amp; schedule &rarr;</strong></a>
+            </div>
+
+            <form th:action="@{/rsvp}" method="post">
+                <fieldset th:disabled="${!rsvpOpen}" style="border:none;padding:0;margin:0;">
+                <label>Will you be joining us?</label>
+                <div class="radio-group">
+                    <div class="radio-tile">
+                        <input type="radio" id="att-yes" name="attending" value="yes"
+                               th:checked="${guest.rsvpStatus.name() == 'ATTENDING' or !guest.hasResponded()}">
+                        <label for="att-yes">Joyfully accept</label>
+                    </div>
+                    <div class="radio-tile">
+                        <input type="radio" id="att-no" name="attending" value="no"
+                               th:checked="${guest.rsvpStatus.name() == 'DECLINED'}">
+                        <label for="att-no">Regretfully decline</label>
+                    </div>
+                </div>
+
+                <div id="plusOneSection">
+                    <div class="check">
+                        <input type="checkbox" id="bringingPlusOne" name="bringingPlusOne" value="true"
+                               th:checked="${guest.bringingPlusOne}">
+                        <label for="bringingPlusOne">I'm bringing a plus-one</label>
+                    </div>
+                    <div id="plusOneNameWrap">
+                        <label for="plusOneName">Plus-one's full name</label>
+                        <input type="text" id="plusOneName" name="plusOneName" th:value="${guest.plusOneName}"
+                               placeholder="e.g. Sam Taylor">
+                    </div>
+                </div>
+
+                <label for="notes">Dietary needs or notes (optional)</label>
+                <textarea id="notes" name="notes" th:text="${guest.notes}"
+                          placeholder="Allergies, accessibility needs, song requests…"></textarea>
+
+                <div class="center mt">
+                    <button type="submit" class="btn">Save RSVP</button>
+                </div>
+                </fieldset>
+            </form>
+
+            <p class="center mt muted" style="font-size:.82rem;">
+                Not you? <a th:href="@{/rsvp/logout}">Sign out</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show the plus-one name field only when the box is checked.
+    (function () {
+        var box = document.getElementById('bringingPlusOne');
+        var wrap = document.getElementById('plusOneNameWrap');
+        function sync() { wrap.style.display = box.checked ? 'block' : 'none'; }
+        box.addEventListener('change', sync);
+        sync();
+    })();
+</script>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

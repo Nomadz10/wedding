@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wedding",
+      "runtimeExecutable": "C:\\Users\\vijay\\.jdks\\jbr-21.0.7\\bin\\java.exe",
+      "runtimeArgs": ["-jar", "target/wedding-1.0.0.jar", "--server.port=8090"],
+      "port": 8090
+    }
+  ]
+}

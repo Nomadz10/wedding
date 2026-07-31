@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="460" height="460" viewBox="0 0 460 460">
+  <defs>
+    <g id="paisley">
+      <path d="M0 0 C70 -8 96 40 70 96 C46 146 -20 140 -30 92 C-38 54 -8 44 14 60 C30 72 26 96 8 100 C-6 102 -14 90 -8 80"
+            fill="#1f6f6b"/>
+      <path d="M0 0 C70 -8 96 40 70 96 C46 146 -20 140 -30 92 C-38 54 -8 44 14 60 C30 72 26 96 8 100 C-6 102 -14 90 -8 80"
+            fill="none" stroke="#b08d57" stroke-width="2.4"/>
+      <g fill="#c9a24a"><circle cx="20" cy="28" r="4"/><circle cx="34" cy="46" r="4"/><circle cx="40" cy="68" r="4"/>
+        <circle cx="34" cy="90" r="4"/><circle cx="16" cy="104" r="4"/></g>
+    </g>
+    <g id="feather">
+      <path d="M0 0 C4 -120 4 -120 0 -230" stroke="#146b64" stroke-width="3" fill="none"/>
+      <ellipse cx="0" cy="-236" rx="34" ry="44" fill="#1f8f86"/>
+      <ellipse cx="0" cy="-236" rx="34" ry="44" fill="none" stroke="#b08d57" stroke-width="2"/>
+      <ellipse cx="0" cy="-242" rx="20" ry="28" fill="#2b4a8c"/>
+      <ellipse cx="0" cy="-246" rx="10" ry="15" fill="#7c2d3a"/>
+      <circle cx="0" cy="-248" r="5" fill="#c9a24a"/>
+      <g stroke="#1f8f86" stroke-width="2" opacity="0.7">
+        <path d="M0 -150 C24 -156 40 -150 54 -132" fill="none"/>
+        <path d="M0 -150 C-24 -156 -40 -150 -54 -132" fill="none"/>
+        <path d="M0 -110 C22 -116 36 -110 48 -94" fill="none"/>
+        <path d="M0 -110 C-22 -116 -36 -110 -48 -94" fill="none"/>
+      </g>
+    </g>
+  </defs>
+
+  <!-- peacock feathers rising from the bottom-right, arcing toward centre -->
+  <use href="#feather" transform="translate(360 460) rotate(14)"/>
+  <use href="#feather" transform="translate(410 460) rotate(26) scale(0.9)"/>
+  <use href="#feather" transform="translate(300 460) rotate(2) scale(0.85)"/>
+
+  <!-- paisleys nestled in the corner -->
+  <use href="#paisley" transform="translate(300 300) rotate(30) scale(1.0)"/>
+  <use href="#paisley" transform="translate(380 340) rotate(60) scale(0.8)"/>
+  <g fill="#7c2d3a" opacity="0.9">
+    <circle cx="430" cy="300" r="7"/><circle cx="415" cy="330" r="5"/><circle cx="440" cy="340" r="4"/>
+  </g>
+</svg>

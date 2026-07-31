@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('RSVP · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<div class="form-page">
+    <div class="container narrow">
+        <div class="card">
+            <div class="center mb">
+                <p class="eyebrow" style="color:var(--accent-dark);letter-spacing:3px;text-transform:uppercase;font-size:.78rem;">RSVP</p>
+                <h2>Find your invitation</h2>
+                <p class="muted">Enter your name</p>
+                <span th:if="${rsvpOpen}" class="deadline">
+                    &#128197; RSVP by <strong style="margin-left:4px;" th:text="${#temporals.format(rsvpDeadline, 'MMMM d, yyyy')}">August 20, 2026</strong>
+                </span>
+                <span th:unless="${rsvpOpen}" class="deadline closed">
+                    &#128197; RSVPs have closed &mdash; you can still sign in to view your details
+                </span>
+            </div>
+
+            <div th:if="${error}" class="alert error" th:text="${error}">error</div>
+
+            <form th:action="@{/rsvp/login}" method="post">
+                <div class="row">
+                    <div>
+                        <label for="firstName">First name</label>
+                        <input type="text" id="firstName" name="firstName" th:value="${firstName}" required autofocus>
+                    </div>
+                    <div>
+                        <label for="lastName">Last name</label>
+                        <input type="text" id="lastName" name="lastName" th:value="${lastName}" required>
+                    </div>
+                </div>
+                <div class="center mt">
+                    <button type="submit" class="btn">Continue</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

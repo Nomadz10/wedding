@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Guests')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('guests')}"></aside>
+    <main class="admin-main">
+        <h1>Guests &amp; RSVPs</h1>
+
+        <div th:if="${message}" class="alert success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert error" th:text="${error}"></div>
+
+        <div class="stat-grid">
+            <div class="stat hl"><div class="num" th:text="${stats.totalHeadcount}">0</div><div class="lbl">Total headcount</div></div>
+            <div class="stat"><div class="num" th:text="${stats.attending}">0</div><div class="lbl">Attending</div></div>
+            <div class="stat"><div class="num" th:text="${stats.pending}">0</div><div class="lbl">Pending</div></div>
+            <div class="stat"><div class="num" th:text="${stats.declined}">0</div><div class="lbl">Declined</div></div>
+        </div>
+
+        <div class="row mt" style="align-items:flex-start;">
+            <div class="card">
+                <h3>Add a guest</h3>
+                <form th:action="@{/admin/guests}" method="post">
+                    <div class="row">
+                        <div><label for="firstName">First name</label><input type="text" id="firstName" name="firstName" required></div>
+                        <div><label for="lastName">Last name</label><input type="text" id="lastName" name="lastName" required></div>
+                    </div>
+                    <div class="mt"><button type="submit" class="btn small">Add guest</button></div>
+                </form>
+            </div>
+            <div class="card">
+                <h3>Bulk import</h3>
+                <form th:action="@{/admin/guests/import}" method="post">
+                    <label for="bulk">One guest per line — "First Last" or "First, Last"</label>
+                    <textarea id="bulk" name="bulk" placeholder="Jane Doe&#10;John Smith&#10;Emily, Jones"></textarea>
+                    <div class="mt"><button type="submit" class="btn small outline">Import list</button></div>
+                </form>
+            </div>
+        </div>
+
+        <div class="toolbar mt">
+            <h3 style="margin:0;">Invite list (<span th:text="${stats.invited}">0</span>)</h3>
+        </div>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+            <tr><th>Name</th><th>RSVP</th><th>Plus-one</th><th>Room</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="g : ${guests}">
+                <td>
+                    <a th:href="@{'/admin/guests/' + ${g.id}}" th:text="${g.firstName} + ' ' + ${g.lastName}">Name</a>
+                    <div class="muted" th:if="${g.notes != null}" style="font-size:.78rem;" th:text="${g.notes}">notes</div>
+                </td>
+                <td>
+                    <span th:if="${g.rsvpStatus.name() == 'ATTENDING'}" class="pill yes">Attending</span>
+                    <span th:if="${g.rsvpStatus.name() == 'DECLINED'}" class="pill no">Declined</span>
+                    <span th:if="${g.rsvpStatus.name() == 'PENDING'}" class="pill pending">Pending</span>
+                </td>
+                <td th:text="${g.bringingPlusOne} ? ${g.plusOneName} : '—'">—</td>
+                <td th:text="${g.roomAssignment != null} ? ${g.roomAssignment} : '—'">—</td>
+                <td>
+                    <a class="btn small outline" th:href="@{'/admin/guests/' + ${g.id}}">Manage</a>
+                </td>
+            </tr>
+            <tr th:if="${guests.isEmpty()}"><td colspan="5" class="center muted">No guests yet — add your invite list above.</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Share your photos · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<div class="form-page">
+    <div class="container narrow">
+        <div class="card">
+            <div class="center mb">
+                <p class="eyebrow" style="color:var(--accent-dark);letter-spacing:3px;text-transform:uppercase;font-size:.78rem;">Photo Wall</p>
+                <h2>Share your photos with us</h2>
+                <p class="muted">Add the moments you captured &mdash; they'll appear on our photo wall for everyone to enjoy.</p>
+            </div>
+
+            <div th:if="${saved != null and saved > 0}" class="alert success">
+                &#127881; Thank you! <strong th:text="${saved}">3</strong> photo(s) added.
+                <a th:href="@{/gallery}"><strong>See the photo wall &rarr;</strong></a>
+            </div>
+            <div th:if="${saved != null and saved == 0}" class="alert warn">
+                Hmm, no photos were added. Please choose one or more image files and try again.
+            </div>
+
+            <form th:action="@{/share}" method="post" enctype="multipart/form-data">
+                <label for="uploaderName">Your name (optional)</label>
+                <input type="text" id="uploaderName" name="uploaderName" placeholder="e.g. Priya">
+
+                <label for="photos" style="margin-top:22px;">Photos</label>
+                <!-- On a phone this opens the gallery (or camera). -->
+                <input type="file" id="photos" name="photos" accept="image/*" multiple
+                       style="display:none;" onchange="document.getElementById('count').textContent =
+                         this.files.length ? this.files.length + ' photo(s) selected' : '';">
+                <label for="photos" class="btn outline" style="display:block;text-align:center;cursor:pointer;">
+                    &#128247; Choose photos from your phone
+                </label>
+                <p id="count" class="center muted mt" style="font-size:.85rem;"></p>
+
+                <div class="center mt">
+                    <button type="submit" class="btn">Upload</button>
+                </div>
+            </form>
+
+            <p class="center mt muted" style="font-size:.8rem;">
+                By uploading you're happy for these photos to be shown on our wedding site.
+            </p>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

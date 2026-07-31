@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Photo Wall · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <p class="eyebrow">Shared by everyone</p>
+            <h2>Our Photo Wall</h2>
+        </div>
+
+        <!-- Add-your-photos card with QR code -->
+        <div class="card center mb" style="max-width:560px;margin:0 auto 40px;">
+            <h3>Add your photos</h3>
+            <p class="muted">Scan this code with your phone camera, or tap the button, to add the moments you captured.</p>
+            <img th:src="@{/qr.png(size=460)}" alt="Scan to add your photos"
+                 style="width:200px;height:200px;image-rendering:pixelated;margin:8px auto;display:block;">
+            <a class="btn" th:href="@{/share}">&#128247; Add your photos</a>
+        </div>
+
+        <div class="gallery" th:if="${!photos.isEmpty()}">
+            <div class="tile" th:each="p : ${photos}">
+                <img th:src="@{'/uploads/' + ${p.filename}}"
+                     th:alt="${p.uploaderName != null} ? 'Photo by ' + ${p.uploaderName} : 'Guest photo'"
+                     loading="lazy">
+            </div>
+        </div>
+
+        <p th:if="${photos.isEmpty()}" class="center muted">
+            No photos yet &mdash; be the first to add one!
+        </p>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

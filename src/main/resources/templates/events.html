@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Events · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<section class="section">
+    <div class="container">
+        <div class="section-title">
+            <p class="eyebrow">Join Us</p>
+            <h2>The Celebrations</h2>
+        </div>
+
+        <!-- Horizontal by day, events stacked within each day, hover for details -->
+        <div th:replace="~{fragments/layout :: timelineByDay(${days})}"></div>
+
+        <!-- Full details listed below for easy reading / printing -->
+        <div class="stack" style="max-width:720px;margin:60px auto 0;" th:if="${!events.isEmpty()}">
+            <div class="card" th:each="e : ${events}">
+                <div class="row" style="align-items:center;">
+                    <div style="flex:2;">
+                        <h3 th:text="${e.title}">Sangeet</h3>
+                        <div class="tl-meta">
+                            <span th:if="${e.startTime != null}"
+                                  th:text="${#temporals.format(e.startTime, 'EEEE, MMMM d · h:mm a')}">Mon, Nov 23 · 7:00 PM</span>
+                        </div>
+                        <div class="tl-meta">
+                            <span th:if="${e.location != null}">&#128205; <span th:text="${e.location}">Venue</span></span>
+                            <span th:if="${e.address != null}" th:text="${e.address}">Address</span>
+                        </div>
+                        <span th:if="${e.dressCode != null}" class="badge" th:text="${e.dressCode}">Dress code</span>
+                        <p th:text="${e.description}">Description</p>
+                    </div>
+                    <div style="flex:1;min-width:160px;" th:if="${e.imageFilename != null}">
+                        <img th:src="@{'/uploads/' + ${e.imageFilename}}" alt="" style="border-radius:12px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="center mt">
+            <a class="btn" th:href="@{/rsvp}" th:if="${rsvpOpen}">RSVP now</a>
+            <span th:unless="${rsvpOpen}" class="deadline closed">RSVPs have now closed</span>
+        </p>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

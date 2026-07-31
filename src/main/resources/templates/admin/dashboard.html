@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Dashboard')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('dashboard')}"></aside>
+    <main class="admin-main">
+        <h1>Dashboard</h1>
+        <p class="muted">A live snapshot for planning hotel rooms and catering.</p>
+
+        <div class="stat-grid">
+            <div class="stat hl">
+                <div class="num" th:text="${stats.totalHeadcount}">0</div>
+                <div class="lbl">Total attending<br>(incl. plus-ones)</div>
+            </div>
+            <div class="stat">
+                <div class="num" th:text="${stats.attending}">0</div>
+                <div class="lbl">Guests saying yes</div>
+            </div>
+            <div class="stat">
+                <div class="num" th:text="${stats.plusOnes}">0</div>
+                <div class="lbl">Plus-ones</div>
+            </div>
+            <div class="stat">
+                <div class="num" th:text="${stats.pending}">0</div>
+                <div class="lbl">Awaiting reply</div>
+            </div>
+            <div class="stat">
+                <div class="num" th:text="${stats.declined}">0</div>
+                <div class="lbl">Can't make it</div>
+            </div>
+            <div class="stat">
+                <div class="num" th:text="${stats.invited}">0</div>
+                <div class="lbl">Total invited</div>
+            </div>
+            <div class="stat">
+                <div class="num" th:text="${stats.roomsAssigned}">0</div>
+                <div class="lbl">Rooms assigned</div>
+            </div>
+        </div>
+
+        <div class="card mt">
+            <h3>Next steps</h3>
+            <ol class="muted">
+                <li>Add your invite list under <a th:href="@{/admin/guests}">Guests &amp; RSVPs</a>.</li>
+                <li>Add or edit the weekend's <a th:href="@{/admin/events}">Events</a> (with photos).</li>
+                <li>Watch the headcount above to book the right number of hotel rooms.</li>
+                <li>Once booked, open each guest to assign their room &amp; personalised schedule.</li>
+            </ol>
+        </div>
+    </main>
+</div>
+</body>
+</html>

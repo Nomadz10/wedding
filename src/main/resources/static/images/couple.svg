@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="230" height="200" viewBox="0 0 230 200" role="img" aria-label="Indian bride and groom exchanging garlands">
+  <!-- ===================== BRIDE (left, facing right) ===================== -->
+  <g>
+    <!-- dupatta flowing down the left/back -->
+    <path d="M64 46 C36 44 24 84 32 128 C46 96 54 74 72 62 C64 56 62 52 64 46 Z" fill="#c0324a"/>
+    <path d="M64 46 C36 44 24 84 32 128" fill="none" stroke="#d9a94a" stroke-width="2"/>
+    <!-- lehenga skirt -->
+    <path d="M54 108 C40 138 33 168 40 190 L112 190 C106 160 98 132 88 108 Z" fill="#c0324a"/>
+    <path d="M40 190 L112 190 L112 180 C86 187 62 187 40 180 Z" fill="#d9a94a"/>
+    <g fill="#d9a94a" opacity="0.9">
+      <circle cx="60" cy="150" r="3"/><circle cx="76" cy="162" r="3"/><circle cx="68" cy="136" r="2.5"/>
+      <circle cx="84" cy="146" r="2.5"/><circle cx="70" cy="172" r="2.5"/>
+    </g>
+    <!-- choli -->
+    <path d="M58 88 C58 102 88 102 88 92 L84 108 L62 108 Z" fill="#a5253c"/>
+    <!-- braided hair over the shoulder with flowers -->
+    <path d="M56 66 C44 82 44 104 52 128 C60 108 58 86 66 70 Z" fill="#3a2418"/>
+    <g fill="#f4e7ea"><circle cx="52" cy="80" r="3"/><circle cx="50" cy="92" r="3"/><circle cx="51" cy="104" r="3"/><circle cx="53" cy="116" r="2.6"/></g>
+    <!-- raised right arm toward centre -->
+    <path d="M84 96 C98 94 108 100 116 110" stroke="#e6b98c" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+    <!-- left arm down -->
+    <path d="M60 96 C51 104 49 116 52 128" stroke="#e6b98c" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+    <!-- neck + head (tilted toward groom) -->
+    <rect x="68" y="74" width="10" height="12" rx="3" fill="#e6b98c"/>
+    <ellipse cx="74" cy="62" rx="14" ry="16" fill="#e6b98c"/>
+    <!-- front hair -->
+    <path d="M60 60 C58 44 80 40 88 54 C88 46 72 36 62 48 C57 52 58 56 60 62 Z" fill="#3a2418"/>
+    <!-- maang tikka + bindi -->
+    <path d="M74 48 l0 6" stroke="#d9a94a" stroke-width="2"/>
+    <circle cx="74" cy="47" r="2.4" fill="#d9a94a"/>
+    <circle cx="74" cy="55" r="1.8" fill="#a5253c"/>
+    <!-- earring, eye, smile -->
+    <circle cx="84" cy="68" r="2" fill="#d9a94a"/>
+    <circle cx="80" cy="62" r="1.6" fill="#2b1d17"/>
+    <path d="M80 70 q4 3 7 0" stroke="#a5253c" stroke-width="1.4" fill="none"/>
+  </g>
+
+  <!-- ===================== GROOM (right, facing left) ===================== -->
+  <g>
+    <!-- royal-blue sherwani -->
+    <path d="M142 104 C136 136 134 166 138 190 L196 190 C198 162 194 132 186 104 Z" fill="#274690"/>
+    <path d="M138 190 L196 190 L196 180 C180 186 158 186 138 180 Z" fill="#d9a94a"/>
+    <g fill="#d9a94a"><circle cx="164" cy="116" r="2"/><circle cx="164" cy="128" r="2"/><circle cx="164" cy="140" r="2"/><circle cx="164" cy="152" r="2"/></g>
+    <!-- cream stole -->
+    <path d="M158 102 C168 128 170 158 168 190 L182 190 C184 160 181 130 176 102 Z" fill="#f2ead2"/>
+    <path d="M158 102 C168 128 170 158 168 190" fill="none" stroke="#d9a94a" stroke-width="1.6"/>
+    <!-- raised left arm toward centre -->
+    <path d="M148 100 C134 98 124 102 116 110" stroke="#e6b98c" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+    <!-- right arm down -->
+    <path d="M182 100 C190 108 192 120 190 132" stroke="#e6b98c" stroke-width="7.5" fill="none" stroke-linecap="round"/>
+    <!-- neck + head (tilted toward bride) -->
+    <rect x="152" y="74" width="10" height="12" rx="3" fill="#e6b98c"/>
+    <ellipse cx="158" cy="64" rx="14" ry="16" fill="#e6b98c"/>
+    <!-- hair -->
+    <path d="M146 60 C146 50 170 50 170 62 C168 54 148 54 146 60 Z" fill="#2b1d17"/>
+    <!-- white turban (safa) with gold band -->
+    <path d="M142 56 C142 34 176 34 176 56 C176 46 159 40 159 40 C159 40 142 46 142 56 Z" fill="#f7f2e6"/>
+    <path d="M142 56 C148 47 170 47 176 56" fill="none" stroke="#d9a94a" stroke-width="3"/>
+    <path d="M145 51 C152 46 166 46 173 51" fill="none" stroke="#c0324a" stroke-width="1.6" opacity="0.6"/>
+    <!-- kalgi plume + jewel -->
+    <path d="M159 40 C159 30 166 27 163 18" stroke="#c0324a" stroke-width="2" fill="none"/>
+    <circle cx="162" cy="17" r="3" fill="#a5253c"/>
+    <circle cx="150" cy="44" r="2.4" fill="#c0324a"/>
+    <!-- beard, eye, smile -->
+    <path d="M149 68 C151 78 167 78 169 68 C166 75 152 75 149 68 Z" fill="#2b1d17"/>
+    <circle cx="152" cy="64" r="1.6" fill="#2b1d17"/>
+  </g>
+
+  <!-- ===================== VARMALA garland between their hands ===================== -->
+  <g>
+    <path d="M108 110 C114 134 116 134 122 110" fill="none" stroke="#c76a1f" stroke-width="2"/>
+    <g fill="#ee9a35">
+      <circle cx="108" cy="110" r="4.2"/><circle cx="110" cy="120" r="4.2"/><circle cx="113" cy="128" r="4.4"/>
+      <circle cx="117" cy="128" r="4.4"/><circle cx="120" cy="120" r="4.2"/><circle cx="122" cy="110" r="4.2"/>
+    </g>
+    <g fill="#b0324a"><circle cx="111" cy="115" r="2.4"/><circle cx="119" cy="115" r="2.4"/><circle cx="115" cy="124" r="2.4"/></g>
+    <g fill="#7ba368"><circle cx="114" cy="118" r="1.6"/><circle cx="117" cy="118" r="1.6"/></g>
+    <!-- hands meeting on the garland -->
+    <circle cx="114" cy="110" r="4" fill="#e6b98c"/>
+    <circle cx="118" cy="111" r="4" fill="#e6b98c"/>
+  </g>
+</svg>

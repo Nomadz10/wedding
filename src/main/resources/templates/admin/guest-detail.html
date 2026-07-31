@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Guest')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('guests')}"></aside>
+    <main class="admin-main">
+        <p><a th:href="@{/admin/guests}">&larr; Back to guests</a></p>
+        <h1 th:text="${guest.firstName} + ' ' + ${guest.lastName}">Jane Doe</h1>
+
+        <div th:if="${message}" class="alert success" th:text="${message}"></div>
+
+        <div class="card mb">
+            <h3>Their RSVP</h3>
+            <p>
+                <span th:if="${guest.rsvpStatus.name() == 'ATTENDING'}" class="pill yes">Attending</span>
+                <span th:if="${guest.rsvpStatus.name() == 'DECLINED'}" class="pill no">Declined</span>
+                <span th:if="${guest.rsvpStatus.name() == 'PENDING'}" class="pill pending">Not responded yet</span>
+            </p>
+            <p class="muted" th:if="${guest.bringingPlusOne}">Plus-one: <strong th:text="${guest.plusOneName}">Name</strong></p>
+            <p class="muted" th:if="${guest.notes != null}">Notes: <span th:text="${guest.notes}">notes</span></p>
+        </div>
+
+        <form th:action="@{'/admin/guests/' + ${guest.id}}" method="post">
+            <div class="card mb">
+                <h3>Accommodation</h3>
+                <p class="muted" style="font-size:.85rem;">Fill this in once the hotel is booked. It becomes visible to the guest when they log in.</p>
+                <label for="roomAssignment">Room assignment</label>
+                <input type="text" id="roomAssignment" name="roomAssignment" th:value="${guest.roomAssignment}" placeholder="e.g. Room 214, Grand Hotel">
+                <label for="roomDetails">Details (hotel, check-in, notes)</label>
+                <textarea id="roomDetails" name="roomDetails" th:text="${guest.roomDetails}" placeholder="Grand Hotel, 5 Main St. Check-in Fri 3pm, check-out Sun 11am."></textarea>
+            </div>
+
+            <div class="card mb">
+                <h3>Personalised schedule</h3>
+                <p class="muted" style="font-size:.85rem;">Tick the events this guest is invited to. Shown on their details page. Leave all unticked to invite them to everything.</p>
+                <div th:each="e : ${allEvents}" class="check">
+                    <input type="checkbox" th:id="'ev' + ${e.id}" name="eventIds" th:value="${e.id}"
+                           th:checked="${guest.invitedEvents.contains(e)}">
+                    <label th:for="'ev' + ${e.id}" th:text="${e.title}">Event</label>
+                </div>
+                <p th:if="${allEvents.isEmpty()}" class="muted">No events created yet.</p>
+            </div>
+
+            <button type="submit" class="btn">Save details</button>
+        </form>
+
+        <form th:action="@{'/admin/guests/' + ${guest.id} + '/delete'}" method="post" class="mt"
+              onsubmit="return confirm('Remove this guest from the invite list?');">
+            <button type="submit" class="btn small danger">Remove guest</button>
+        </form>
+    </main>
+</div>
+</body>
+</html>

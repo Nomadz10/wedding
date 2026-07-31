@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Your Details · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<div class="form-page">
+    <div class="container narrow">
+        <div class="card">
+            <div class="center mb">
+                <p class="eyebrow" style="color:var(--accent-dark);letter-spacing:3px;text-transform:uppercase;font-size:.78rem;">Your Weekend</p>
+                <h2 th:text="${guest.firstName} + ' ' + ${guest.lastName}">Jane Doe</h2>
+            </div>
+
+            <!-- Accommodation -->
+            <div th:if="${guest.roomBooked}">
+                <h3>&#127976; Where you're staying</h3>
+                <div class="stack" style="margin:10px 0 26px;">
+                    <p><strong th:text="${guest.roomAssignment}">Room 214</strong></p>
+                    <p class="muted" th:if="${guest.roomDetails != null}" th:text="${guest.roomDetails}"
+                       style="white-space:pre-line;">Grand Hotel, check-in Fri 3pm</p>
+                    <p class="muted" th:if="${guest.bringingPlusOne}">
+                        Reserved for you and <span th:text="${guest.plusOneName}">your plus-one</span>.
+                    </p>
+                </div>
+            </div>
+            <div th:unless="${guest.roomBooked}" class="alert info">
+                Your accommodation hasn't been assigned yet — check back closer to the date.
+            </div>
+
+            <!-- Personalised schedule -->
+            <h3>&#128197; Your schedule</h3>
+            <div th:if="${!guest.invitedEvents.isEmpty()}" class="stack mt">
+                <div th:each="e : ${#lists.sort(guest.invitedEvents)}" class="card"
+                     style="padding:16px 18px;box-shadow:none;">
+                    <strong th:text="${e.title}">Ceremony</strong>
+                    <div class="tl-meta" style="margin:4px 0 0;">
+                        <span th:if="${e.startTime != null}" th:text="${#temporals.format(e.startTime, 'EEE, MMM d · h:mm a')}">Sat, Sep 19 · 3:00 PM</span>
+                        <span th:if="${e.location != null}" th:text="'· ' + ${e.location}">· Location</span>
+                    </div>
+                </div>
+            </div>
+            <p th:if="${guest.invitedEvents.isEmpty()}" class="muted mt">
+                You're warmly invited to all of our events — see the <a th:href="@{/events}">full schedule</a>.
+            </p>
+
+            <p class="center mt">
+                <a class="btn outline small" th:href="@{/rsvp}">&larr; Back to your RSVP</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

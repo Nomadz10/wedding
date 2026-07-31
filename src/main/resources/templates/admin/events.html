@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Events')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('events')}"></aside>
+    <main class="admin-main">
+        <div class="toolbar">
+            <h1 style="margin:0;">Events</h1>
+            <a class="btn small" th:href="@{/admin/events/new}">+ Add event</a>
+        </div>
+
+        <div th:if="${message}" class="alert success" th:text="${message}"></div>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+            <tr><th>Order</th><th>Title</th><th>When</th><th>Location</th><th>Photo</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="e : ${events}">
+                <td th:text="${e.displayOrder}">1</td>
+                <td th:text="${e.title}">Ceremony</td>
+                <td th:text="${e.startTime != null} ? ${#temporals.format(e.startTime, 'EEE, MMM d · h:mm a')} : '—'">—</td>
+                <td th:text="${e.location != null} ? ${e.location} : '—'">—</td>
+                <td th:text="${e.imageFilename != null} ? '✓' : '—'">—</td>
+                <td>
+                    <a class="btn small outline" th:href="@{'/admin/events/' + ${e.id} + '/edit'}">Edit</a>
+                    <form class="inline-form" th:action="@{'/admin/events/' + ${e.id} + '/delete'}" method="post"
+                          onsubmit="return confirm('Delete this event?');">
+                        <button type="submit" class="btn small danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${events.isEmpty()}"><td colspan="6" class="center muted">No events yet.</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>
