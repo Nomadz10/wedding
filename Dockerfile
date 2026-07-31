@@ -10,6 +10,10 @@ RUN mvn -q -DskipTests package
 
 # ---- Stage 2: slim runtime image ----
 FROM eclipse-temurin:21-jre
+# ImageMagick + libheif so uploaded iPhone HEIC/HEIF photos can be converted to JPEG.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends imagemagick libheif1 \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/target/wedding-1.0.0.jar app.jar
 # Railway/most hosts inject PORT; Spring reads it via server.port=${PORT:8080}

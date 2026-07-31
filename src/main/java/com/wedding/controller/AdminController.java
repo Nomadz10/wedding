@@ -122,7 +122,7 @@ public class AdminController {
         e.setDressCode(dressCode);
         e.setStartTime(startTime);
         e.setDisplayOrder(displayOrder);
-        String stored = fileStorage.store(photo);
+        String stored = fileStorage.storeImageAsJpeg(photo);
         if (stored != null) {
             e.setImageFilename(stored);
         }

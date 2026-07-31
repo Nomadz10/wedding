@@ -27,7 +27,7 @@ public class GalleryService {
         int saved = 0;
         for (MultipartFile f : files) {
             if (f == null || f.isEmpty() || !isImage(f)) continue;
-            String stored = fileStorage.store(f);
+            String stored = fileStorage.storeImageAsJpeg(f);
             if (stored == null) continue;
             GalleryPhoto p = new GalleryPhoto();
             p.setFilename(stored);
