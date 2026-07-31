@@ -9,11 +9,14 @@ COPY src ./src
 RUN mvn -q -DskipTests package
 
 # ---- Stage 2: slim runtime image ----
-FROM eclipse-temurin:21-jre
-# ImageMagick for general image transcoding + libheif-examples (heif-convert)
-# so uploaded iPhone HEIC/HEIF photos can be converted to JPEG.
+# Ubuntu 22.04 (jammy) base on purpose: its libheif 1.12 + libde265 decode iPhone
+# HEIC reliably. Ubuntu 24.04's split-plugin libheif throws
+# "Decoder plugin generated an error: Unspecified" on the same files.
+FROM eclipse-temurin:21-jre-jammy
+# imagemagick = general transcoding/resize; libheif-examples = `heif-convert`;
+# libde265 = the HEVC decoder HEIC needs.
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends imagemagick libheif1 libheif-examples \
+    && apt-get install -y --no-install-recommends imagemagick libheif1 libde265-0 libheif-examples \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY --from=build /app/target/wedding-1.0.0.jar app.jar
