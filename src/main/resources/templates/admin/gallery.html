@@ -11,6 +11,18 @@
         <div th:if="${message}" class="alert success" th:text="${message}"></div>
 
         <div class="card mb" style="max-width:520px;">
+            <h3>&#11088; Home slideshow photos</h3>
+            <p class="muted" style="font-size:.9rem;">
+                These are the photos that rotate in the slideshow on the home page. Upload your own here,
+                or star any guest photo below to add it. Guest uploads go to the wall only unless you star them.
+            </p>
+            <form th:action="@{/admin/gallery/upload}" method="post" enctype="multipart/form-data">
+                <input type="file" name="photos" accept="image/*" multiple>
+                <div class="mt"><button type="submit" class="btn small">Upload to slideshow</button></div>
+            </form>
+        </div>
+
+        <div class="card mb" style="max-width:520px;">
             <h3>The QR code to display</h3>
             <p class="muted" style="font-size:.9rem;">Print this or show it on a screen at the wedding. Guests scan it to add their photos.</p>
             <img th:src="@{/qr.png(size=600)}" alt="Photo upload QR code"
@@ -19,10 +31,21 @@
             <p class="muted" style="font-size:.82rem;">Guests upload at: <a th:href="@{/share}" th:text="@{/share}">/share</a></p>
         </div>
 
-        <h3>Uploaded photos (<span th:text="${#lists.size(photos)}">0</span>)</h3>
+        <h3>All photos (<span th:text="${#lists.size(photos)}">0</span>)</h3>
+        <p class="muted" style="font-size:.85rem;">Star &#9733; a photo to add it to the home slideshow; &times; removes it everywhere.</p>
         <div class="gallery" th:if="${!photos.isEmpty()}">
-            <div class="tile" th:each="p : ${photos}" style="position:relative;">
+            <div class="tile" th:each="p : ${photos}" style="position:relative;"
+                 th:style="${p.featured} ? 'position:relative;outline:3px solid var(--accent);outline-offset:-3px;' : 'position:relative;'">
                 <img th:src="@{'/uploads/' + ${p.filename}}" alt="" loading="lazy">
+                <!-- star / feature toggle -->
+                <form th:action="@{'/admin/gallery/' + ${p.id} + '/feature'}" method="post"
+                      style="position:absolute;top:6px;left:6px;">
+                    <button type="submit" class="btn small"
+                            th:classappend="${p.featured} ? '' : ' outline'"
+                            th:title="${p.featured} ? 'On the home slideshow — click to remove' : 'Add to the home slideshow'"
+                            style="padding:4px 9px;" th:text="${p.featured} ? '★' : '☆'">☆</button>
+                </form>
+                <!-- delete -->
                 <form th:action="@{'/admin/gallery/' + ${p.id} + '/delete'}" method="post"
                       style="position:absolute;top:6px;right:6px;"
                       onsubmit="return confirm('Remove this photo?');">

@@ -20,7 +20,8 @@ public class HomeController {
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("days", eventService.days());
-        model.addAttribute("galleryPhotos", galleryService.recent(8));
+        // Home shows only the curated "featured" photos, as a rotating slideshow.
+        model.addAttribute("galleryPhotos", galleryService.featured());
         return "index";
     }
 

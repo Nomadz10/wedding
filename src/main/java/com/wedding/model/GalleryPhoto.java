@@ -26,6 +26,10 @@ public class GalleryPhoto {
     @Column(nullable = false)
     private boolean approved = true;
 
+    /** Shown in the rotating slideshow on the home page (curated by the couple). */
+    @Column(nullable = false)
+    private boolean featured = false;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -40,4 +44,7 @@ public class GalleryPhoto {
 
     public boolean isApproved() { return approved; }
     public void setApproved(boolean approved) { this.approved = approved; }
+
+    public boolean isFeatured() { return featured; }
+    public void setFeatured(boolean featured) { this.featured = featured; }
 }

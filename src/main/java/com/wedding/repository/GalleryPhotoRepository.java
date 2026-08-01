@@ -14,4 +14,9 @@ public interface GalleryPhotoRepository extends JpaRepository<GalleryPhoto, Long
     List<GalleryPhoto> findAllByOrderByUploadedAtDesc();
 
     long countByApprovedTrue();
+
+    /** Featured + approved photos for the home slideshow (newest first). */
+    List<GalleryPhoto> findByFeaturedTrueAndApprovedTrueOrderByUploadedAtDesc();
+
+    long countByFeaturedTrueAndApprovedTrue();
 }

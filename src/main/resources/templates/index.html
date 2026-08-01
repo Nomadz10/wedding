@@ -57,22 +57,34 @@
 <section class="section">
     <div class="container">
         <div class="section-title">
-            <p class="eyebrow">Shared by our guests</p>
+            <p class="eyebrow">A few of our favourites</p>
             <h2>Our Moments</h2>
             <p class="muted" style="max-width:520px;margin:0 auto;">
                 Captured a moment? Add it to our photo wall &mdash; scan the QR code at the wedding or tap below.
             </p>
         </div>
 
-        <!-- Real guest photos, padded out with decorative tiles until they arrive. -->
-        <div class="gallery">
-            <div class="tile" th:each="p : ${galleryPhotos}">
-                <img th:src="@{'/uploads/' + ${p.filename}}" alt="Guest photo" loading="lazy">
+        <!-- Rotating slideshow of the couple's featured photos. -->
+        <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
+            <div class="slides">
+                <div class="slide" th:each="p, it : ${galleryPhotos}" th:classappend="${it.index == 0} ? ' active'">
+                    <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment" loading="lazy">
+                </div>
             </div>
-            <th:block th:if="${#lists.size(galleryPhotos) < 4}"
-                      th:each="i : ${#numbers.sequence(1, 4 - #lists.size(galleryPhotos))}">
-                <div class="tile placeholder"></div>
-            </th:block>
+            <button class="ss-btn ss-prev" type="button" aria-label="Previous photo">&#8249;</button>
+            <button class="ss-btn ss-next" type="button" aria-label="Next photo">&#8250;</button>
+            <div class="ss-dots">
+                <button class="ss-dot" type="button" th:each="p, it : ${galleryPhotos}"
+                        th:classappend="${it.index == 0} ? ' active'" th:attr="aria-label='Go to photo ' + ${it.index + 1}"></button>
+            </div>
+        </div>
+
+        <!-- Placeholders until there are featured photos. -->
+        <div class="gallery" th:if="${galleryPhotos.isEmpty()}">
+            <div class="tile placeholder"></div>
+            <div class="tile placeholder"></div>
+            <div class="tile placeholder"></div>
+            <div class="tile placeholder"></div>
         </div>
 
         <p class="center mt">
@@ -81,6 +93,33 @@
         </p>
     </div>
 </section>
+
+<script>
+    (function () {
+        var ss = document.getElementById('slideshow');
+        if (!ss) return;
+        var slides = [].slice.call(ss.querySelectorAll('.slide'));
+        var dots = [].slice.call(ss.querySelectorAll('.ss-dot'));
+        if (slides.length <= 1) {
+            // Nothing to rotate — hide the controls.
+            ss.querySelectorAll('.ss-btn, .ss-dots').forEach(function (el) { el.style.display = 'none'; });
+            return;
+        }
+        var i = 0, timer;
+        function show(n) {
+            i = (n + slides.length) % slides.length;
+            slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+            dots.forEach(function (d, idx) { d.classList.toggle('active', idx === i); });
+        }
+        function next() { show(i + 1); }
+        function start() { timer = setInterval(next, 4500); }
+        function reset() { clearInterval(timer); start(); }
+        ss.querySelector('.ss-next').addEventListener('click', function () { next(); reset(); });
+        ss.querySelector('.ss-prev').addEventListener('click', function () { show(i - 1); reset(); });
+        dots.forEach(function (d, idx) { d.addEventListener('click', function () { show(idx); reset(); }); });
+        start();
+    })();
+</script>
 
 <footer th:replace="~{fragments/layout :: footer}"></footer>
 </body>

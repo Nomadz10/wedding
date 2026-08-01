@@ -20,8 +20,13 @@ public class GalleryService {
         this.fileStorage = fileStorage;
     }
 
-    /** Stores each valid image and records it. Returns how many were saved. */
+    /** Guest uploads (photo wall only). Returns how many were saved. */
     public int saveAll(MultipartFile[] files, String uploaderName) {
+        return saveAll(files, uploaderName, false);
+    }
+
+    /** Stores each valid image and records it. `featured` also puts it on the home slideshow. */
+    public int saveAll(MultipartFile[] files, String uploaderName, boolean featured) {
         if (files == null) return 0;
         String name = (uploaderName == null || uploaderName.isBlank()) ? null : uploaderName.trim();
         int saved = 0;
@@ -34,6 +39,7 @@ public class GalleryService {
             p.setUploaderName(name);
             p.setUploadedAt(LocalDateTime.now());
             p.setApproved(true);
+            p.setFeatured(featured);
             repo.save(p);
             saved++;
         }
@@ -48,12 +54,29 @@ public class GalleryService {
         return repo.findByApprovedTrueOrderByUploadedAtDesc(Limit.of(max));
     }
 
+    /** Curated photos for the home slideshow. */
+    public List<GalleryPhoto> featured() {
+        return repo.findByFeaturedTrueAndApprovedTrueOrderByUploadedAtDesc();
+    }
+
     public List<GalleryPhoto> all() {
         return repo.findAllByOrderByUploadedAtDesc();
     }
 
     public long approvedCount() {
         return repo.countByApprovedTrue();
+    }
+
+    public long featuredCount() {
+        return repo.countByFeaturedTrueAndApprovedTrue();
+    }
+
+    /** Flip whether a photo appears in the home slideshow. */
+    public void toggleFeatured(Long id) {
+        repo.findById(id).ifPresent(p -> {
+            p.setFeatured(!p.isFeatured());
+            repo.save(p);
+        });
     }
 
     public void delete(Long id) {

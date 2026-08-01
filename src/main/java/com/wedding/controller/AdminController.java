@@ -260,4 +260,20 @@ public class AdminController {
         ra.addFlashAttribute("message", "Photo removed.");
         return "redirect:/admin/gallery";
     }
+
+    /** Upload photos that go straight to the home-page slideshow (featured). */
+    @PostMapping("/gallery/upload")
+    public String uploadFeatured(@RequestParam(value = "photos", required = false) MultipartFile[] photos,
+                                 RedirectAttributes ra) {
+        int saved = galleryService.saveAll(photos, "Couple", true);
+        ra.addFlashAttribute("message", "Added " + saved + " photo(s) to the home slideshow.");
+        return "redirect:/admin/gallery";
+    }
+
+    /** Toggle whether a photo appears in the home slideshow. */
+    @PostMapping("/gallery/{id}/feature")
+    public String toggleFeatured(@PathVariable Long id, RedirectAttributes ra) {
+        galleryService.toggleFeatured(id);
+        return "redirect:/admin/gallery";
+    }
 }
