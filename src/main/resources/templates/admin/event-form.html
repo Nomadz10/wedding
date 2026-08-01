@@ -29,19 +29,30 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div>
-                    <label for="location">Location</label>
-                    <input type="text" id="location" name="location" th:value="${event.location}">
-                </div>
-                <div>
-                    <label for="dressCode">Dress code</label>
-                    <input type="text" id="dressCode" name="dressCode" th:value="${event.dressCode}">
-                </div>
-            </div>
+            <label for="location">Location (venue name)</label>
+            <input type="text" id="location" name="location" th:value="${event.location}" placeholder="e.g. The Amaltas Fort">
 
             <label for="address">Address</label>
-            <input type="text" id="address" name="address" th:value="${event.address}">
+            <input type="text" id="address" name="address" th:value="${event.address}" placeholder="e.g. Hyderabad, India">
+
+            <label for="mapUrl">Map link (clickable) <span class="muted">— paste a Google Maps link</span></label>
+            <input type="text" id="mapUrl" name="mapUrl" th:value="${event.mapUrl}" placeholder="https://maps.app.goo.gl/...">
+
+            <div class="card" style="box-shadow:none;background:#faf7f2;margin-top:18px;">
+                <strong style="font-family:var(--serif);font-size:1.1rem;">Dress Code</strong>
+                <div class="row" style="margin-top:8px;">
+                    <div>
+                        <label for="dressCodeWomen">Women</label>
+                        <input type="text" id="dressCodeWomen" name="dressCodeWomen" th:value="${event.dressCodeWomen}" placeholder="e.g. Lehengas, sarees">
+                    </div>
+                    <div>
+                        <label for="dressCodeMen">Men</label>
+                        <input type="text" id="dressCodeMen" name="dressCodeMen" th:value="${event.dressCodeMen}" placeholder="e.g. Sherwanis, kurtas">
+                    </div>
+                </div>
+                <label for="dressCode">General note (optional, shown if the two above are empty)</label>
+                <input type="text" id="dressCode" name="dressCode" th:value="${event.dressCode}" placeholder="e.g. Indian festive">
+            </div>
 
             <label for="photo">Photo <span class="muted" th:if="${event.imageFilename != null}">(a photo is already set — upload to replace)</span></label>
             <input type="file" id="photo" name="photo" accept="image/*">

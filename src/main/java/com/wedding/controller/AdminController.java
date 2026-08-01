@@ -110,6 +110,9 @@ public class AdminController {
                             @RequestParam(required = false) String location,
                             @RequestParam(required = false) String address,
                             @RequestParam(required = false) String dressCode,
+                            @RequestParam(required = false) String dressCodeWomen,
+                            @RequestParam(required = false) String dressCodeMen,
+                            @RequestParam(required = false) String mapUrl,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
                             @RequestParam(required = false, defaultValue = "0") int displayOrder,
                             @RequestParam(required = false) MultipartFile photo,
@@ -119,7 +122,10 @@ public class AdminController {
         e.setDescription(description);
         e.setLocation(location);
         e.setAddress(address);
-        e.setDressCode(dressCode);
+        e.setDressCode(blankToNull(dressCode));
+        e.setDressCodeWomen(blankToNull(dressCodeWomen));
+        e.setDressCodeMen(blankToNull(dressCodeMen));
+        e.setMapUrl(blankToNull(mapUrl));
         e.setStartTime(startTime);
         e.setDisplayOrder(displayOrder);
         String stored = fileStorage.storeImageAsJpeg(photo);
@@ -129,6 +135,10 @@ public class AdminController {
         eventService.save(e);
         ra.addFlashAttribute("message", "Event saved.");
         return "redirect:/admin/events";
+    }
+
+    private static String blankToNull(String s) {
+        return (s == null || s.isBlank()) ? null : s.trim();
     }
 
     @PostMapping("/events/{id}/delete")

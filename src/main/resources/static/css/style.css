@@ -238,6 +238,25 @@ a:hover { text-decoration: underline; }
     padding: 3px 10px; border-radius: 999px; margin-top: 6px;
 }
 
+/* clickable venue / map link */
+.maplink {
+    display: inline-block; margin-top: 8px; font-size: 0.88rem;
+    color: var(--accent-dark); font-weight: 500;
+}
+.maplink:hover { color: var(--maroon); }
+
+/* dress code block, split by women / men */
+.dresscode {
+    margin-top: 12px; padding: 10px 14px; border-radius: 10px;
+    background: rgba(124,45,58,0.06); border: 1px solid rgba(124,45,58,0.14);
+    font-size: 0.9rem; line-height: 1.5;
+}
+.dresscode .dc-label {
+    display: block; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 1.2px;
+    color: var(--maroon); font-weight: 600; margin-bottom: 4px;
+}
+.dresscode strong { color: var(--ink); }
+
 /* Tablet/mobile (<860px): everything goes vertical, details always shown, no hover. */
 @media (max-width: 860px) {
     .htl-track { flex-direction: column; gap: 0; padding: 10px 0 10px 0; }

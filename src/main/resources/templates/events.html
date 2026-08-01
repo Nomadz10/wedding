@@ -24,11 +24,22 @@
                             <span th:if="${e.startTime != null}"
                                   th:text="${#temporals.format(e.startTime, 'EEEE, MMMM d · h:mm a')}">Mon, Nov 23 · 7:00 PM</span>
                         </div>
-                        <div class="tl-meta">
-                            <span th:if="${e.location != null}">&#128205; <span th:text="${e.location}">Venue</span></span>
-                            <span th:if="${e.address != null}" th:text="${e.address}">Address</span>
+                        <div class="tl-meta" th:if="${e.location != null}">
+                            &#128205;
+                            <a th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer" th:text="${e.location}">Venue</a>
+                            <span th:unless="${!#strings.isEmpty(e.mapUrl)}" th:text="${e.location}">Venue</span>
                         </div>
-                        <span th:if="${e.dressCode != null}" class="badge" th:text="${e.dressCode}">Dress code</span>
+                        <div class="tl-meta" th:if="${e.address != null}"><span th:text="${e.address}">Address</span></div>
+                        <a class="maplink" th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer">&#128506;&#65039; View on map</a>
+
+                        <div class="dresscode"
+                             th:if="${!#strings.isEmpty(e.dressCodeWomen) or !#strings.isEmpty(e.dressCodeMen) or !#strings.isEmpty(e.dressCode)}">
+                            <span class="dc-label">Dress Code</span>
+                            <div th:if="${!#strings.isEmpty(e.dressCodeWomen)}"><strong>Women:</strong> <span th:text="${e.dressCodeWomen}">Lehengas, sarees</span></div>
+                            <div th:if="${!#strings.isEmpty(e.dressCodeMen)}"><strong>Men:</strong> <span th:text="${e.dressCodeMen}">Sherwanis, kurtas</span></div>
+                            <div th:if="${#strings.isEmpty(e.dressCodeWomen) and #strings.isEmpty(e.dressCodeMen) and !#strings.isEmpty(e.dressCode)}" th:text="${e.dressCode}">Indian festive</div>
+                        </div>
+
                         <p th:text="${e.description}">Description</p>
                     </div>
                     <div style="flex:1;min-width:160px;" th:if="${e.imageFilename != null}">

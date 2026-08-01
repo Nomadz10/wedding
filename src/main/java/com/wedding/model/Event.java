@@ -33,8 +33,18 @@ public class Event implements Comparable<Event> {
     /** Controls ordering on the timeline (lower = earlier). */
     private int displayOrder = 0;
 
-    /** Optional dress code / notes shown under the event. */
+    /** Optional general dress code (used as a fallback if the split ones are empty). */
     private String dressCode;
+
+    /** Dress code for women (e.g. "Lehengas, sarees"). */
+    private String dressCodeWomen;
+
+    /** Dress code for men (e.g. "Sherwanis, kurtas"). */
+    private String dressCodeMen;
+
+    /** Optional clickable link for the venue (e.g. a Google Maps URL). */
+    @Column(length = 1000)
+    private String mapUrl;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -62,6 +72,15 @@ public class Event implements Comparable<Event> {
 
     public String getDressCode() { return dressCode; }
     public void setDressCode(String dressCode) { this.dressCode = dressCode; }
+
+    public String getDressCodeWomen() { return dressCodeWomen; }
+    public void setDressCodeWomen(String dressCodeWomen) { this.dressCodeWomen = dressCodeWomen; }
+
+    public String getDressCodeMen() { return dressCodeMen; }
+    public void setDressCodeMen(String dressCodeMen) { this.dressCodeMen = dressCodeMen; }
+
+    public String getMapUrl() { return mapUrl; }
+    public void setMapUrl(String mapUrl) { this.mapUrl = mapUrl; }
 
     /** Orders by displayOrder, then start time (nulls last), for the personalised schedule. */
     @Override
