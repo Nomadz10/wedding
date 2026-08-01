@@ -1,6 +1,7 @@
 package com.wedding.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 import java.time.LocalDateTime;
 
 /** A photo uploaded by a guest to the shared photo wall. */
@@ -24,10 +25,13 @@ public class GalleryPhoto {
 
     /** Visible on the public wall when true. Lets the couple hide a photo. */
     @Column(nullable = false)
+    @ColumnDefault("true")
     private boolean approved = true;
 
-    /** Shown in the rotating slideshow on the home page (curated by the couple). */
+    /** Shown in the rotating slideshow on the home page (curated by the couple).
+     *  ColumnDefault lets this column be added safely to an existing table. */
     @Column(nullable = false)
+    @ColumnDefault("false")
     private boolean featured = false;
 
     public Long getId() { return id; }
