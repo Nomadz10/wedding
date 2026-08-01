@@ -64,10 +64,10 @@
             </p>
         </div>
 
-        <!-- Rotating carousel: several featured photos at a time (full photos, never cropped). -->
+        <!-- Rotating strip of colored photo cards; uniform height, natural widths, no cropping. -->
         <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
-            <div class="ss-grid">
-                <div class="ss-photo" th:each="p : ${galleryPhotos}">
+            <div class="ss-strip">
+                <div class="ss-card" th:each="p : ${galleryPhotos}">
                     <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment" loading="lazy">
                 </div>
             </div>
@@ -95,8 +95,8 @@
     (function () {
         var ss = document.getElementById('slideshow');
         if (!ss) return;
-        var grid = ss.querySelector('.ss-grid');
-        var photos = [].slice.call(grid.children);
+        var strip = ss.querySelector('.ss-strip');
+        var photos = [].slice.call(strip.children);
         var dotsWrap = ss.querySelector('.ss-dots');
         var prev = ss.querySelector('.ss-prev'), next = ss.querySelector('.ss-next');
         var page = 0, pp = 1, pages = 1, timer, rt;
@@ -127,14 +127,13 @@
         }
         function go(p) {
             page = (p + pages) % pages;
-            grid.style.opacity = '0';
-            setTimeout(function () { render(); grid.style.opacity = '1'; }, 300);
+            strip.style.opacity = '0';
+            setTimeout(function () { render(); strip.style.opacity = '1'; }, 300);
         }
         function nextPage() { go(page + 1); }
         function resetTimer() { clearInterval(timer); if (pages > 1) timer = setInterval(nextPage, 5000); }
         function layout() {
             pp = perPage();
-            grid.style.gridTemplateColumns = 'repeat(' + pp + ', 1fr)';
             pages = Math.max(1, Math.ceil(photos.length / pp));
             if (page >= pages) page = 0;
             buildDots();

@@ -297,15 +297,25 @@ a:hover { text-decoration: underline; }
 .gallery .tile:nth-child(4n)   { background: linear-gradient(135deg, #efe1c4, #f9f2e2); } /* gold */
 @media (max-width: 760px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
 
-/* ---------- Home slideshow (several photos at a time, rotating) ---------- */
-.slideshow { position: relative; max-width: 1000px; margin: 0 auto; }
-.ss-grid { display: grid; gap: 14px; transition: opacity .3s ease; }
-.ss-photo {
-    aspect-ratio: 1 / 1; border-radius: var(--radius); overflow: hidden;
+/* ---------- Home slideshow (rotating strip of colored photo cards) ---------- */
+.slideshow { position: relative; max-width: 1040px; margin: 0 auto; }
+.ss-strip {
+    display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
+    gap: 16px; transition: opacity .3s ease;
+}
+/* Cards: coloured mat frame; photos share a height, widths vary (no cropping). */
+.ss-card {
+    display: inline-flex; padding: 8px; border-radius: 16px;
     box-shadow: var(--shadow); background: linear-gradient(135deg, #efe7da, #f7f1e8);
 }
-/* contain (not cover) so full photos show — faces are never cropped */
-.ss-photo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ss-card img {
+    height: clamp(180px, 24vw, 260px); width: auto; display: block; border-radius: 10px;
+    max-width: min(80vw, 560px);
+}
+.ss-card:nth-child(4n+1) { background: linear-gradient(135deg, #f3d7dd, #faf1f2); } /* blush */
+.ss-card:nth-child(4n+2) { background: linear-gradient(135deg, #f6e4c8, #fdf6ea); } /* marigold */
+.ss-card:nth-child(4n+3) { background: linear-gradient(135deg, #d6e8e3, #eef7f4); } /* teal */
+.ss-card:nth-child(4n)   { background: linear-gradient(135deg, #efe1c4, #f9f2e2); } /* gold */
 .ss-btn {
     position: absolute; top: 50%; transform: translateY(-50%); z-index: 2;
     width: 42px; height: 42px; border-radius: 50%; border: none; cursor: pointer;
