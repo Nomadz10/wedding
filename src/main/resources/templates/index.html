@@ -64,19 +64,16 @@
             </p>
         </div>
 
-        <!-- Rotating slideshow of the couple's featured photos. -->
+        <!-- Rotating carousel: several featured photos at a time (full photos, never cropped). -->
         <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
-            <div class="slides">
-                <div class="slide" th:each="p, it : ${galleryPhotos}" th:classappend="${it.index == 0} ? ' active'">
+            <div class="ss-grid">
+                <div class="ss-photo" th:each="p : ${galleryPhotos}">
                     <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment" loading="lazy">
                 </div>
             </div>
-            <button class="ss-btn ss-prev" type="button" aria-label="Previous photo">&#8249;</button>
-            <button class="ss-btn ss-next" type="button" aria-label="Next photo">&#8250;</button>
-            <div class="ss-dots">
-                <button class="ss-dot" type="button" th:each="p, it : ${galleryPhotos}"
-                        th:classappend="${it.index == 0} ? ' active'" th:attr="aria-label='Go to photo ' + ${it.index + 1}"></button>
-            </div>
+            <button class="ss-btn ss-prev" type="button" aria-label="Previous photos">&#8249;</button>
+            <button class="ss-btn ss-next" type="button" aria-label="Next photos">&#8250;</button>
+            <div class="ss-dots"></div>
         </div>
 
         <!-- Placeholders until there are featured photos. -->
@@ -98,26 +95,58 @@
     (function () {
         var ss = document.getElementById('slideshow');
         if (!ss) return;
-        var slides = [].slice.call(ss.querySelectorAll('.slide'));
-        var dots = [].slice.call(ss.querySelectorAll('.ss-dot'));
-        if (slides.length <= 1) {
-            // Nothing to rotate — hide the controls.
-            ss.querySelectorAll('.ss-btn, .ss-dots').forEach(function (el) { el.style.display = 'none'; });
-            return;
+        var grid = ss.querySelector('.ss-grid');
+        var photos = [].slice.call(grid.children);
+        var dotsWrap = ss.querySelector('.ss-dots');
+        var prev = ss.querySelector('.ss-prev'), next = ss.querySelector('.ss-next');
+        var page = 0, pp = 1, pages = 1, timer, rt;
+
+        // How many photos to show at once, by screen width.
+        function perPage() {
+            var w = window.innerWidth;
+            if (w >= 1000) return 4;
+            if (w >= 760) return 3;
+            if (w >= 520) return 2;
+            return 1;
         }
-        var i = 0, timer;
-        function show(n) {
-            i = (n + slides.length) % slides.length;
-            slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
-            dots.forEach(function (d, idx) { d.classList.toggle('active', idx === i); });
+        function buildDots() {
+            dotsWrap.innerHTML = '';
+            for (var i = 0; i < pages; i++) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'ss-dot' + (i === page ? ' active' : '');
+                (function (idx) { b.addEventListener('click', function () { go(idx); resetTimer(); }); })(i);
+                dotsWrap.appendChild(b);
+            }
         }
-        function next() { show(i + 1); }
-        function start() { timer = setInterval(next, 4500); }
-        function reset() { clearInterval(timer); start(); }
-        ss.querySelector('.ss-next').addEventListener('click', function () { next(); reset(); });
-        ss.querySelector('.ss-prev').addEventListener('click', function () { show(i - 1); reset(); });
-        dots.forEach(function (d, idx) { d.addEventListener('click', function () { show(idx); reset(); }); });
-        start();
+        function render() {
+            var start = page * pp;
+            photos.forEach(function (el, i) { el.style.display = (i >= start && i < start + pp) ? '' : 'none'; });
+            var dots = dotsWrap.children;
+            for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('active', i === page);
+        }
+        function go(p) {
+            page = (p + pages) % pages;
+            grid.style.opacity = '0';
+            setTimeout(function () { render(); grid.style.opacity = '1'; }, 300);
+        }
+        function nextPage() { go(page + 1); }
+        function resetTimer() { clearInterval(timer); if (pages > 1) timer = setInterval(nextPage, 5000); }
+        function layout() {
+            pp = perPage();
+            grid.style.gridTemplateColumns = 'repeat(' + pp + ', 1fr)';
+            pages = Math.max(1, Math.ceil(photos.length / pp));
+            if (page >= pages) page = 0;
+            buildDots();
+            render();
+            var multi = pages > 1;
+            [prev, next, dotsWrap].forEach(function (el) { el.style.display = multi ? '' : 'none'; });
+            resetTimer();
+        }
+        prev.addEventListener('click', function () { go(page - 1); resetTimer(); });
+        next.addEventListener('click', function () { go(page + 1); resetTimer(); });
+        window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 200); });
+        layout();
     })();
 </script>
 
