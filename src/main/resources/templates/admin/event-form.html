@@ -14,8 +14,20 @@
             <label for="title">Title *</label>
             <input type="text" id="title" name="title" th:value="${event.title}" required>
 
-            <label for="description">Description</label>
-            <textarea id="description" name="description" th:text="${event.description}"></textarea>
+            <label>Description <span class="muted">— use the buttons to format</span></label>
+            <div class="rte-toolbar">
+                <button type="button" data-cmd="bold" title="Bold"><b>B</b></button>
+                <button type="button" data-cmd="italic" title="Italic"><i>I</i></button>
+                <button type="button" data-cmd="underline" title="Underline"><u>U</u></button>
+                <button type="button" data-cmd="insertUnorderedList" title="Bullet list">&#8226; List</button>
+                <button type="button" data-cmd="insertOrderedList" title="Numbered list">1. List</button>
+                <button type="button" data-cmd="outdent" title="Outdent">&#8676;</button>
+                <button type="button" data-cmd="indent" title="Indent">&#8677;</button>
+                <button type="button" data-cmd="removeFormat" title="Clear formatting">Clear</button>
+            </div>
+            <!-- Existing text is loaded here unchanged; Enter = new paragraph, Shift+Enter = line break. -->
+            <div id="rte" class="rte" contenteditable="true" th:utext="${event.description}"></div>
+            <input type="hidden" name="description" id="descHidden">
 
             <div class="row">
                 <div>
@@ -40,18 +52,12 @@
 
             <div class="card" style="box-shadow:none;background:#faf7f2;margin-top:18px;">
                 <strong style="font-family:var(--serif);font-size:1.1rem;">Dress Code</strong>
-                <div class="row" style="margin-top:8px;">
-                    <div>
-                        <label for="dressCodeWomen">Women</label>
-                        <input type="text" id="dressCodeWomen" name="dressCodeWomen" th:value="${event.dressCodeWomen}" placeholder="e.g. Lehengas, sarees">
-                    </div>
-                    <div>
-                        <label for="dressCodeMen">Men</label>
-                        <input type="text" id="dressCodeMen" name="dressCodeMen" th:value="${event.dressCodeMen}" placeholder="e.g. Sherwanis, kurtas">
-                    </div>
-                </div>
-                <label for="dressCode">General note (optional, shown if the two above are empty)</label>
-                <input type="text" id="dressCode" name="dressCode" th:value="${event.dressCode}" placeholder="e.g. Indian festive">
+                <label for="dressCode">Dress code</label>
+                <input type="text" id="dressCode" name="dressCode" th:value="${event.dressCode}"
+                       placeholder="e.g. Indian festive — lehengas, sarees, sherwanis">
+                <label for="dressCodeWestern">Western alternatives <span class="muted">— so guests can wear what they're used to</span></label>
+                <input type="text" id="dressCodeWestern" name="dressCodeWestern" th:value="${event.dressCodeWestern}"
+                       placeholder="e.g. Cocktail dresses, suits">
             </div>
 
             <label for="photo">Photo <span class="muted" th:if="${event.imageFilename != null}">(a photo is already set — upload to replace)</span></label>
@@ -67,5 +73,28 @@
         </form>
     </main>
 </div>
+
+<script>
+    (function () {
+        var rte = document.getElementById('rte');
+        var hidden = document.getElementById('descHidden');
+        if (!rte || !hidden) return;
+        try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) {}
+        document.querySelectorAll('.rte-toolbar [data-cmd]').forEach(function (btn) {
+            // keep the text selection when clicking a toolbar button
+            btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+            btn.addEventListener('click', function () {
+                rte.focus();
+                document.execCommand(btn.getAttribute('data-cmd'), false, null);
+            });
+        });
+        // Copy the formatted HTML into the hidden field on submit.
+        rte.closest('form').addEventListener('submit', function () {
+            var html = rte.innerHTML.trim();
+            if (html === '<br>' || html === '<p></p>' || html === '<p><br></p>') html = '';
+            hidden.value = html;
+        });
+    })();
+</script>
 </body>
 </html>

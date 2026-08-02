@@ -33,14 +33,11 @@ public class Event implements Comparable<Event> {
     /** Controls ordering on the timeline (lower = earlier). */
     private int displayOrder = 0;
 
-    /** Optional general dress code (used as a fallback if the split ones are empty). */
+    /** The main dress code (e.g. "Indian festive — lehengas, sarees, sherwanis"). */
     private String dressCode;
 
-    /** Dress code for women (e.g. "Lehengas, sarees"). */
-    private String dressCodeWomen;
-
-    /** Dress code for men (e.g. "Sherwanis, kurtas"). */
-    private String dressCodeMen;
+    /** Western alternatives so guests can wear what they're used to (e.g. "Cocktail dresses, suits"). */
+    private String dressCodeWestern;
 
     /** Optional clickable link for the venue (e.g. a Google Maps URL). */
     @Column(length = 1000)
@@ -73,11 +70,8 @@ public class Event implements Comparable<Event> {
     public String getDressCode() { return dressCode; }
     public void setDressCode(String dressCode) { this.dressCode = dressCode; }
 
-    public String getDressCodeWomen() { return dressCodeWomen; }
-    public void setDressCodeWomen(String dressCodeWomen) { this.dressCodeWomen = dressCodeWomen; }
-
-    public String getDressCodeMen() { return dressCodeMen; }
-    public void setDressCodeMen(String dressCodeMen) { this.dressCodeMen = dressCodeMen; }
+    public String getDressCodeWestern() { return dressCodeWestern; }
+    public void setDressCodeWestern(String dressCodeWestern) { this.dressCodeWestern = dressCodeWestern; }
 
     public String getMapUrl() { return mapUrl; }
     public void setMapUrl(String mapUrl) { this.mapUrl = mapUrl; }

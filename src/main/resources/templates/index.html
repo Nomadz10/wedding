@@ -68,7 +68,7 @@
         <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
             <div class="ss-strip">
                 <div class="ss-card" th:each="p : ${galleryPhotos}">
-                    <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment" loading="lazy">
+                    <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment">
                 </div>
             </div>
             <button class="ss-btn ss-prev" type="button" aria-label="Previous photos">&#8249;</button>

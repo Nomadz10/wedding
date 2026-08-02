@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/style.css(v=11)}">
+    <link rel="stylesheet" th:href="@{/css/style.css(v=12)}">
 </head>
 <body>
 
@@ -30,21 +30,28 @@
 <div th:fragment="timelineByDay(days)" class="htl">
     <div class="htl-track" th:if="${!days.isEmpty()}">
         <div class="htl-day" th:each="day : ${days}">
-            <div class="htl-day-head">
+            <!-- top event (first of the day, sits above the line) -->
+            <div class="htl-slot htl-top">
+                <div class="htl-event" th:if="${!day.events.isEmpty()}" th:with="e=${day.events[0]}" tabindex="0">
+                    <span class="htl-title" th:text="${e.title}">Sangeet</span>
+                    <span class="htl-time" th:if="${e.startTime != null}"
+                          th:text="${#temporals.format(e.startTime, 'h:mm a')}">7:00 PM</span>
+                    <div class="htl-detail" th:insert="~{fragments/layout :: eventPopover(${e})}"></div>
+                </div>
+            </div>
+            <!-- axis: dot on the line + the date label -->
+            <div class="htl-axis">
                 <span class="htl-dot"></span>
                 <span class="htl-day-label" th:text="${day.date != null}
                         ? ${#temporals.format(day.date, 'EEE, MMM d')} : 'Date TBC'">Mon, Nov 23</span>
             </div>
-            <div class="htl-day-events">
-                <div class="htl-event" th:each="e : ${day.events}" tabindex="0">
-                    <span class="htl-title" th:text="${e.title}">Sangeet</span>
+            <!-- bottom event (second of the day, sits below the line) -->
+            <div class="htl-slot htl-bottom">
+                <div class="htl-event" th:if="${#lists.size(day.events) > 1}" th:with="e=${day.events[1]}" tabindex="0">
+                    <span class="htl-title" th:text="${e.title}">Reception</span>
                     <span class="htl-time" th:if="${e.startTime != null}"
                           th:text="${#temporals.format(e.startTime, 'h:mm a')}">7:00 PM</span>
-                    <span class="htl-hint">Details</span>
-                    <div class="htl-detail">
-                        <img th:if="${e.imageFilename != null}" th:src="@{'/uploads/' + ${e.imageFilename}}" alt="">
-                        <div class="htl-detail-body" th:insert="~{fragments/layout :: eventDetailBody(${e})}"></div>
-                    </div>
+                    <div class="htl-detail" th:insert="~{fragments/layout :: eventPopover(${e})}"></div>
                 </div>
             </div>
         </div>
@@ -52,27 +59,24 @@
     <p th:if="${days.isEmpty()}" class="center muted">The schedule will appear here soon.</p>
 </div>
 
-<!-- Reusable event detail body: title, clickable venue link, dress code, description. -->
-<th:block th:fragment="eventDetailBody(e)">
-    <h3 th:text="${e.title}">Sangeet</h3>
-    <div class="tl-meta" th:if="${e.location != null}">
-        &#128205;
-        <a th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer" th:text="${e.location}">Venue</a>
-        <span th:unless="${!#strings.isEmpty(e.mapUrl)}" th:text="${e.location}">Venue</span>
+<!-- Compact hover popover: title, venue link, map link, dress code. NO description/address
+     (those live on the full Events page). -->
+<th:block th:fragment="eventPopover(e)">
+    <img th:if="${e.imageFilename != null}" th:src="@{'/uploads/' + ${e.imageFilename}}" alt="">
+    <div class="htl-detail-body">
+        <h3 th:text="${e.title}">Sangeet</h3>
+        <div class="tl-meta" th:if="${e.location != null}">
+            &#128205;
+            <a th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer" th:text="${e.location}">Venue</a>
+            <span th:unless="${!#strings.isEmpty(e.mapUrl)}" th:text="${e.location}">Venue</span>
+        </div>
+        <a class="maplink" th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer">&#128506;&#65039; View on map</a>
+        <div class="dresscode" th:if="${!#strings.isEmpty(e.dressCode) or !#strings.isEmpty(e.dressCodeWestern)}">
+            <span class="dc-label">Dress Code</span>
+            <div th:if="${!#strings.isEmpty(e.dressCode)}" th:text="${e.dressCode}">Indian festive</div>
+            <div th:if="${!#strings.isEmpty(e.dressCodeWestern)}"><strong>Western alternatives:</strong> <span th:text="${e.dressCodeWestern}">Cocktail dresses, suits</span></div>
+        </div>
     </div>
-    <div class="tl-meta" th:if="${e.address != null}"><span th:text="${e.address}">Address</span></div>
-    <a class="maplink" th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer">&#128506;&#65039; View on map</a>
-
-    <div class="dresscode"
-         th:if="${!#strings.isEmpty(e.dressCodeWomen) or !#strings.isEmpty(e.dressCodeMen) or !#strings.isEmpty(e.dressCode)}">
-        <span class="dc-label">Dress Code</span>
-        <div th:if="${!#strings.isEmpty(e.dressCodeWomen)}"><strong>Women:</strong> <span th:text="${e.dressCodeWomen}">Lehengas, sarees</span></div>
-        <div th:if="${!#strings.isEmpty(e.dressCodeMen)}"><strong>Men:</strong> <span th:text="${e.dressCodeMen}">Sherwanis, kurtas</span></div>
-        <div th:if="${#strings.isEmpty(e.dressCodeWomen) and #strings.isEmpty(e.dressCodeMen) and !#strings.isEmpty(e.dressCode)}"
-             th:text="${e.dressCode}">Indian festive</div>
-    </div>
-
-    <p th:if="${!#strings.isEmpty(e.description)}" th:text="${e.description}">Description</p>
 </th:block>
 
 <footer th:fragment="footer" class="footer">

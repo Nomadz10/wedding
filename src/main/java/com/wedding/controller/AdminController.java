@@ -110,8 +110,7 @@ public class AdminController {
                             @RequestParam(required = false) String location,
                             @RequestParam(required = false) String address,
                             @RequestParam(required = false) String dressCode,
-                            @RequestParam(required = false) String dressCodeWomen,
-                            @RequestParam(required = false) String dressCodeMen,
+                            @RequestParam(required = false) String dressCodeWestern,
                             @RequestParam(required = false) String mapUrl,
                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime,
                             @RequestParam(required = false, defaultValue = "0") int displayOrder,
@@ -123,8 +122,7 @@ public class AdminController {
         e.setLocation(location);
         e.setAddress(address);
         e.setDressCode(blankToNull(dressCode));
-        e.setDressCodeWomen(blankToNull(dressCodeWomen));
-        e.setDressCodeMen(blankToNull(dressCodeMen));
+        e.setDressCodeWestern(blankToNull(dressCodeWestern));
         e.setMapUrl(blankToNull(mapUrl));
         e.setStartTime(startTime);
         e.setDisplayOrder(displayOrder);

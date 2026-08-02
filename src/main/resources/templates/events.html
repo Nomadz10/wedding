@@ -33,14 +33,14 @@
                         <a class="maplink" th:if="${!#strings.isEmpty(e.mapUrl)}" th:href="${e.mapUrl}" target="_blank" rel="noopener noreferrer">&#128506;&#65039; View on map</a>
 
                         <div class="dresscode"
-                             th:if="${!#strings.isEmpty(e.dressCodeWomen) or !#strings.isEmpty(e.dressCodeMen) or !#strings.isEmpty(e.dressCode)}">
+                             th:if="${!#strings.isEmpty(e.dressCode) or !#strings.isEmpty(e.dressCodeWestern)}">
                             <span class="dc-label">Dress Code</span>
-                            <div th:if="${!#strings.isEmpty(e.dressCodeWomen)}"><strong>Women:</strong> <span th:text="${e.dressCodeWomen}">Lehengas, sarees</span></div>
-                            <div th:if="${!#strings.isEmpty(e.dressCodeMen)}"><strong>Men:</strong> <span th:text="${e.dressCodeMen}">Sherwanis, kurtas</span></div>
-                            <div th:if="${#strings.isEmpty(e.dressCodeWomen) and #strings.isEmpty(e.dressCodeMen) and !#strings.isEmpty(e.dressCode)}" th:text="${e.dressCode}">Indian festive</div>
+                            <div th:if="${!#strings.isEmpty(e.dressCode)}" th:text="${e.dressCode}">Indian festive</div>
+                            <div th:if="${!#strings.isEmpty(e.dressCodeWestern)}"><strong>Western alternatives:</strong> <span th:text="${e.dressCodeWestern}">Cocktail dresses, suits</span></div>
                         </div>
 
-                        <p th:text="${e.description}">Description</p>
+                        <!-- Rich-text description (formatting from the admin editor). -->
+                        <div class="event-desc" th:if="${!#strings.isEmpty(e.description)}" th:utext="${e.description}">Description</div>
                     </div>
                     <div style="flex:1;min-width:160px;" th:if="${e.imageFilename != null}">
                         <img th:src="@{'/uploads/' + ${e.imageFilename}}" alt="" style="border-radius:12px;">
