@@ -55,7 +55,13 @@
 </section>
 
 <section class="moments-section">
-    <!-- Full-width tall photo band with the title floated on top. -->
+    <!-- Title in the cream banner area above the photos. -->
+    <div class="moments-title">
+        <p class="eyebrow">A few of our favourites</p>
+        <h2>Our Moments</h2>
+    </div>
+
+    <!-- Full-width tall photo band. -->
     <div class="moments-band">
         <!-- Continuous marquee of large photos sliding right-to-left. -->
         <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
@@ -78,13 +84,6 @@
             <div class="tile placeholder"></div>
         </div>
 
-        <!-- Overlaid title -->
-        <div class="moments-overlay">
-            <div class="moments-overlay-inner">
-                <p class="eyebrow">A few of our favourites</p>
-                <h2>Our Moments</h2>
-            </div>
-        </div>
     </div>
 
     <div class="container center">
