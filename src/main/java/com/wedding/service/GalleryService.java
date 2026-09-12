@@ -1,16 +1,30 @@
 package com.wedding.service;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.wedding.model.GalleryPhoto;
 import com.wedding.repository.GalleryPhotoRepository;
-import org.springframework.data.domain.Limit;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Service
 public class GalleryService {
+
+    private static final Logger log = LoggerFactory.getLogger(GalleryService.class);
+
+    /** Newest-taken first; photos without EXIF fall back to their upload time. */
+    private static final Comparator<GalleryPhoto> BY_DATE_DESC =
+            Comparator.comparing(GalleryPhoto::effectiveDate, Comparator.reverseOrder());
 
     private final GalleryPhotoRepository repo;
     private final FileStorageService fileStorage;
@@ -32,12 +46,14 @@ public class GalleryService {
         int saved = 0;
         for (MultipartFile f : files) {
             if (f == null || f.isEmpty() || !isImage(f)) continue;
+            LocalDateTime takenAt = readTakenAt(f);   // read EXIF before conversion
             String stored = fileStorage.storeImageAsJpeg(f);
             if (stored == null) continue;
             GalleryPhoto p = new GalleryPhoto();
             p.setFilename(stored);
             p.setUploaderName(name);
             p.setUploadedAt(LocalDateTime.now());
+            p.setTakenAt(takenAt);
             p.setApproved(true);
             p.setFeatured(featured);
             repo.save(p);
@@ -47,20 +63,35 @@ public class GalleryService {
     }
 
     public List<GalleryPhoto> approved() {
-        return repo.findByApprovedTrueOrderByUploadedAtDesc();
+        return repo.findByApprovedTrueOrderByUploadedAtDesc().stream().sorted(BY_DATE_DESC).toList();
     }
 
     public List<GalleryPhoto> recent(int max) {
-        return repo.findByApprovedTrueOrderByUploadedAtDesc(Limit.of(max));
+        return featured().stream().limit(max).toList();
     }
 
     /** Curated photos for the home slideshow. */
     public List<GalleryPhoto> featured() {
-        return repo.findByFeaturedTrueAndApprovedTrueOrderByUploadedAtDesc();
+        return repo.findByFeaturedTrueAndApprovedTrueOrderByUploadedAtDesc().stream().sorted(BY_DATE_DESC).toList();
     }
 
     public List<GalleryPhoto> all() {
-        return repo.findAllByOrderByUploadedAtDesc();
+        return repo.findAllByOrderByUploadedAtDesc().stream().sorted(BY_DATE_DESC).toList();
+    }
+
+    /** Reads the EXIF "date taken" from an uploaded photo (JPEG/HEIC), or null. */
+    private LocalDateTime readTakenAt(MultipartFile f) {
+        try (InputStream in = f.getInputStream()) {
+            Metadata md = ImageMetadataReader.readMetadata(in);
+            ExifSubIFDDirectory dir = md.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+            if (dir != null) {
+                Date d = dir.getDateOriginal();
+                if (d != null) return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault());
+            }
+        } catch (Exception e) {
+            log.debug("No EXIF date for upload {}: {}", f.getOriginalFilename(), e.toString());
+        }
+        return null;
     }
 
     public long approvedCount() {

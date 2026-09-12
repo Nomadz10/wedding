@@ -23,6 +23,9 @@ public class GalleryPhoto {
     @Column(nullable = false)
     private LocalDateTime uploadedAt = LocalDateTime.now();
 
+    /** When the photo was actually taken (from EXIF), or null if unavailable. */
+    private LocalDateTime takenAt;
+
     /** Visible on the public wall when true. Lets the couple hide a photo. */
     @Column(nullable = false)
     @ColumnDefault("true")
@@ -45,6 +48,14 @@ public class GalleryPhoto {
 
     public LocalDateTime getUploadedAt() { return uploadedAt; }
     public void setUploadedAt(LocalDateTime uploadedAt) { this.uploadedAt = uploadedAt; }
+
+    public LocalDateTime getTakenAt() { return takenAt; }
+    public void setTakenAt(LocalDateTime takenAt) { this.takenAt = takenAt; }
+
+    /** Sort key: when the photo was taken, falling back to when it was uploaded. */
+    public LocalDateTime effectiveDate() {
+        return takenAt != null ? takenAt : uploadedAt;
+    }
 
     public boolean isApproved() { return approved; }
     public void setApproved(boolean approved) { this.approved = approved; }
