@@ -333,6 +333,32 @@ a:hover { text-decoration: underline; }
 .gallery .tile:nth-child(4n)   { background: linear-gradient(135deg, #efe1c4, #f9f2e2); } /* gold */
 @media (max-width: 760px) { .gallery { grid-template-columns: repeat(2, 1fr); } }
 
+/* ---------- Photo wall (masonry: natural shapes, never cropped) ---------- */
+.photowall { column-count: 4; column-gap: 14px; }
+.photowall .tile {
+    break-inside: avoid; -webkit-column-break-inside: avoid; page-break-inside: avoid;
+    display: block; margin: 0 0 14px; position: relative;
+    border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow);
+    background: linear-gradient(135deg, #efe7da, #f7f1e8);
+}
+.photowall .tile img { display: block; width: 100%; height: auto; cursor: zoom-in; }
+@media (max-width: 1000px) { .photowall { column-count: 3; } }
+@media (max-width: 680px)  { .photowall { column-count: 2; } }
+
+/* click-to-enlarge lightbox */
+.lightbox {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(20, 16, 14, 0.92);
+    display: flex; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out;
+}
+.lightbox img { max-width: 94vw; max-height: 90vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,.55); cursor: default; }
+.lightbox-close {
+    position: absolute; top: 14px; right: 18px; z-index: 2;
+    width: 46px; height: 46px; border: none; border-radius: 50%; cursor: pointer;
+    background: rgba(255,255,255,0.15); color: #fff; font-size: 1.9rem; line-height: 1;
+}
+.lightbox-close:hover { background: rgba(255,255,255,0.3); }
+
 /* ---------- Home slideshow (continuous right-to-left marquee) ---------- */
 .slideshow { position: relative; margin: 0 auto; }
 .ss-viewport {

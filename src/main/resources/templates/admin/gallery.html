@@ -33,9 +33,9 @@
 
         <h3>All photos (<span th:text="${#lists.size(photos)}">0</span>)</h3>
         <p class="muted" style="font-size:.85rem;">Star &#9733; a photo to add it to the home slideshow; &times; removes it everywhere.</p>
-        <div class="gallery" th:if="${!photos.isEmpty()}">
-            <div class="tile" th:each="p : ${photos}" style="position:relative;"
-                 th:style="${p.featured} ? 'position:relative;outline:3px solid var(--accent);outline-offset:-3px;' : 'position:relative;'">
+        <div class="photowall" th:if="${!photos.isEmpty()}">
+            <div class="tile" th:each="p : ${photos}"
+                 th:style="${p.featured} ? 'outline:3px solid var(--accent);outline-offset:-3px;' : ''">
                 <img th:src="@{'/uploads/' + ${p.filename}}" alt="" loading="lazy">
                 <!-- star / feature toggle -->
                 <form th:action="@{'/admin/gallery/' + ${p.id} + '/feature'}" method="post"
