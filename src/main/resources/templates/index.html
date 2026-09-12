@@ -66,6 +66,8 @@
                     </div>
                 </div>
             </div>
+            <button class="ss-arrow ss-arrow-left" type="button" aria-label="Scroll photos left">&#8249;</button>
+            <button class="ss-arrow ss-arrow-right" type="button" aria-label="Scroll photos right">&#8250;</button>
         </div>
 
         <!-- Placeholders until there are featured photos. -->
@@ -99,7 +101,8 @@
 <script>
     (function () {
         var track = document.getElementById('ssTrack');
-        if (!track) return;
+        var slideshow = document.getElementById('slideshow');
+        if (!track || !slideshow) return;
         var originals = [].slice.call(track.children);
         var count = originals.length;
         if (count === 0) return;
@@ -107,22 +110,42 @@
         // Duplicate the cards once so the strip can loop seamlessly.
         originals.forEach(function (c) { track.appendChild(c.cloneNode(true)); });
 
-        var SPEED = 45; // pixels per second
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var SPEED = reduce ? 0 : 50;   // auto-scroll, pixels per second
+        var JUMP = 360;                // pixels moved per arrow click
+        var shift = 1, pos = 0, extra = 0, hovered = false, last = 0, running = false;
 
         function measure() {
             var items = track.children;
-            // Distance from the first card to its duplicate = exactly one loop.
-            var shift = items[count].offsetLeft - items[0].offsetLeft;
-            if (shift <= 0) return;
-            track.style.setProperty('--ss-shift', shift + 'px');
-            track.style.setProperty('--ss-dur', Math.max(12, shift / SPEED) + 's');
+            var s = items[count].offsetLeft - items[0].offsetLeft; // one full loop
+            if (s > 0) shift = s;
         }
-        function start() { measure(); track.classList.add('ss-animate'); }
+        function frame(now) {
+            var dt = last ? Math.min(50, now - last) : 16; last = now;
+            if (!hovered) pos += SPEED * dt / 1000;            // auto-scroll
+            if (Math.abs(extra) > 0.5) {                        // absorb an arrow jump smoothly
+                var step = extra * Math.min(1, dt / 120);
+                pos += step; extra -= step;
+            }
+            while (pos >= shift) pos -= shift;                  // seamless wrap
+            while (pos < 0) pos += shift;
+            track.style.transform = 'translateX(' + (-pos) + 'px)';
+            requestAnimationFrame(frame);
+        }
+        function start() { if (running) return; running = true; measure(); requestAnimationFrame(frame); }
+
+        // Auto-scroll pauses on hover; arrows still work.
+        slideshow.addEventListener('mouseenter', function () { hovered = true; });
+        slideshow.addEventListener('mouseleave', function () { hovered = false; });
+        var leftBtn = slideshow.querySelector('.ss-arrow-left');
+        var rightBtn = slideshow.querySelector('.ss-arrow-right');
+        if (rightBtn) rightBtn.addEventListener('click', function () { extra += JUMP; });
+        if (leftBtn) leftBtn.addEventListener('click', function () { extra -= JUMP; });
 
         // Wait for images so widths are correct before measuring.
         var imgs = [].slice.call(track.querySelectorAll('img'));
         var pending = imgs.length;
-        if (pending === 0) { start(); }
+        if (pending === 0) start();
         else {
             imgs.forEach(function (im) {
                 if (im.complete && im.naturalWidth) { if (--pending === 0) start(); }
@@ -131,7 +154,7 @@
                     im.addEventListener('error', function () { if (--pending === 0) start(); }, { once: true });
                 }
             });
-            setTimeout(function () { if (!track.classList.contains('ss-animate')) start(); }, 3000);
+            setTimeout(start, 3000);
         }
 
         var rt;

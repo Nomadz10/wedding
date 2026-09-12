@@ -342,16 +342,18 @@ a:hover { text-decoration: underline; }
             mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent);
 }
 .ss-track { display: flex; gap: 16px; width: max-content; will-change: transform; }
-.ss-track.ss-animate { animation: ss-marquee var(--ss-dur, 30s) linear infinite; }
-.ss-track:hover { animation-play-state: paused; }
-@keyframes ss-marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(calc(-1 * var(--ss-shift, 50%))); }
+/* left/right arrows to scroll manually; auto-scroll continues (driven in JS) */
+.ss-arrow {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 4;
+    width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
+    background: rgba(255,255,255,0.85); color: var(--ink); font-size: 1.7rem; line-height: 1;
+    box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center;
+    transition: background .15s ease;
 }
-@media (prefers-reduced-motion: reduce) {
-    .ss-track.ss-animate { animation: none; }
-    .ss-track { flex-wrap: wrap; justify-content: center; width: auto; }
-}
+.ss-arrow:hover { background: #fff; }
+.ss-arrow-left { left: 14px; }
+.ss-arrow-right { right: 14px; }
+@media (max-width: 600px) { .ss-arrow { width: 38px; height: 38px; font-size: 1.4rem; } }
 /* Cards: coloured mat frame; photos share a height, widths vary (no cropping). */
 .ss-card {
     flex: none; display: inline-flex; padding: 8px; border-radius: 16px;
