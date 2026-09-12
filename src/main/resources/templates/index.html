@@ -64,16 +64,15 @@
             </p>
         </div>
 
-        <!-- Rotating strip of colored photo cards; uniform height, natural widths, no cropping. -->
+        <!-- Continuous marquee of colored photo cards sliding right-to-left. -->
         <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
-            <div class="ss-strip">
-                <div class="ss-card" th:each="p : ${galleryPhotos}">
-                    <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment">
+            <div class="ss-viewport">
+                <div class="ss-track" id="ssTrack">
+                    <div class="ss-card" th:each="p : ${galleryPhotos}">
+                        <img th:src="@{'/uploads/' + ${p.filename}}" alt="Our moment">
+                    </div>
                 </div>
             </div>
-            <button class="ss-btn ss-prev" type="button" aria-label="Previous photos">&#8249;</button>
-            <button class="ss-btn ss-next" type="button" aria-label="Next photos">&#8250;</button>
-            <div class="ss-dots"></div>
         </div>
 
         <!-- Placeholders until there are featured photos. -->
@@ -93,59 +92,44 @@
 
 <script>
     (function () {
-        var ss = document.getElementById('slideshow');
-        if (!ss) return;
-        var strip = ss.querySelector('.ss-strip');
-        var photos = [].slice.call(strip.children);
-        var dotsWrap = ss.querySelector('.ss-dots');
-        var prev = ss.querySelector('.ss-prev'), next = ss.querySelector('.ss-next');
-        var page = 0, pp = 1, pages = 1, timer, rt;
+        var track = document.getElementById('ssTrack');
+        if (!track) return;
+        var originals = [].slice.call(track.children);
+        var count = originals.length;
+        if (count === 0) return;
 
-        // How many photos to show at once, by screen width.
-        function perPage() {
-            var w = window.innerWidth;
-            if (w >= 1000) return 4;
-            if (w >= 760) return 3;
-            if (w >= 520) return 2;
-            return 1;
+        // Duplicate the cards once so the strip can loop seamlessly.
+        originals.forEach(function (c) { track.appendChild(c.cloneNode(true)); });
+
+        var SPEED = 45; // pixels per second
+
+        function measure() {
+            var items = track.children;
+            // Distance from the first card to its duplicate = exactly one loop.
+            var shift = items[count].offsetLeft - items[0].offsetLeft;
+            if (shift <= 0) return;
+            track.style.setProperty('--ss-shift', shift + 'px');
+            track.style.setProperty('--ss-dur', Math.max(12, shift / SPEED) + 's');
         }
-        function buildDots() {
-            dotsWrap.innerHTML = '';
-            for (var i = 0; i < pages; i++) {
-                var b = document.createElement('button');
-                b.type = 'button';
-                b.className = 'ss-dot' + (i === page ? ' active' : '');
-                (function (idx) { b.addEventListener('click', function () { go(idx); resetTimer(); }); })(i);
-                dotsWrap.appendChild(b);
-            }
+        function start() { measure(); track.classList.add('ss-animate'); }
+
+        // Wait for images so widths are correct before measuring.
+        var imgs = [].slice.call(track.querySelectorAll('img'));
+        var pending = imgs.length;
+        if (pending === 0) { start(); }
+        else {
+            imgs.forEach(function (im) {
+                if (im.complete && im.naturalWidth) { if (--pending === 0) start(); }
+                else {
+                    im.addEventListener('load', function () { if (--pending === 0) start(); }, { once: true });
+                    im.addEventListener('error', function () { if (--pending === 0) start(); }, { once: true });
+                }
+            });
+            setTimeout(function () { if (!track.classList.contains('ss-animate')) start(); }, 3000);
         }
-        function render() {
-            var start = page * pp;
-            photos.forEach(function (el, i) { el.style.display = (i >= start && i < start + pp) ? '' : 'none'; });
-            var dots = dotsWrap.children;
-            for (var i = 0; i < dots.length; i++) dots[i].classList.toggle('active', i === page);
-        }
-        function go(p) {
-            page = (p + pages) % pages;
-            strip.style.opacity = '0';
-            setTimeout(function () { render(); strip.style.opacity = '1'; }, 300);
-        }
-        function nextPage() { go(page + 1); }
-        function resetTimer() { clearInterval(timer); if (pages > 1) timer = setInterval(nextPage, 5000); }
-        function layout() {
-            pp = perPage();
-            pages = Math.max(1, Math.ceil(photos.length / pp));
-            if (page >= pages) page = 0;
-            buildDots();
-            render();
-            var multi = pages > 1;
-            [prev, next, dotsWrap].forEach(function (el) { el.style.display = multi ? '' : 'none'; });
-            resetTimer();
-        }
-        prev.addEventListener('click', function () { go(page - 1); resetTimer(); });
-        next.addEventListener('click', function () { go(page + 1); resetTimer(); });
-        window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(layout, 200); });
-        layout();
+
+        var rt;
+        window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(measure, 250); });
     })();
 </script>
 
