@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
@@ -22,9 +24,9 @@ public class GalleryService {
 
     private static final Logger log = LoggerFactory.getLogger(GalleryService.class);
 
-    /** Newest-taken first; photos without EXIF fall back to their upload time. */
-    private static final Comparator<GalleryPhoto> BY_DATE_DESC =
-            Comparator.comparing(GalleryPhoto::effectiveDate, Comparator.reverseOrder());
+    /** Oldest-taken first (chronological); photos without EXIF fall back to their upload time. */
+    private static final Comparator<GalleryPhoto> BY_DATE_ASC =
+            Comparator.comparing(GalleryPhoto::effectiveDate);
 
     private final GalleryPhotoRepository repo;
     private final FileStorageService fileStorage;
@@ -63,7 +65,7 @@ public class GalleryService {
     }
 
     public List<GalleryPhoto> approved() {
-        return repo.findByApprovedTrueOrderByUploadedAtDesc().stream().sorted(BY_DATE_DESC).toList();
+        return repo.findByApprovedTrueOrderByUploadedAtDesc().stream().sorted(BY_DATE_ASC).toList();
     }
 
     public List<GalleryPhoto> recent(int max) {
@@ -72,24 +74,50 @@ public class GalleryService {
 
     /** Curated photos for the home slideshow. */
     public List<GalleryPhoto> featured() {
-        return repo.findByFeaturedTrueAndApprovedTrueOrderByUploadedAtDesc().stream().sorted(BY_DATE_DESC).toList();
+        return repo.findByFeaturedTrueAndApprovedTrueOrderByUploadedAtDesc().stream().sorted(BY_DATE_ASC).toList();
     }
 
     public List<GalleryPhoto> all() {
-        return repo.findAllByOrderByUploadedAtDesc().stream().sorted(BY_DATE_DESC).toList();
+        return repo.findAllByOrderByUploadedAtDesc().stream().sorted(BY_DATE_ASC).toList();
+    }
+
+    /**
+     * One-time backfill: for photos with no "date taken" yet, read the EXIF from
+     * the stored file. Runs on startup; cheap and idempotent (only touches nulls).
+     */
+    public int backfillTakenAt() {
+        int updated = 0;
+        for (GalleryPhoto p : repo.findAll()) {
+            if (p.getTakenAt() != null) continue;
+            Path file = fileStorage.getUploadDir().resolve(p.getFilename());
+            if (!Files.exists(file)) continue;
+            try (InputStream in = Files.newInputStream(file)) {
+                LocalDateTime t = extractTakenAt(in);
+                if (t != null) { p.setTakenAt(t); repo.save(p); updated++; }
+            } catch (Exception e) {
+                log.debug("Backfill EXIF failed for {}: {}", p.getFilename(), e.toString());
+            }
+        }
+        if (updated > 0) log.info("Backfilled 'date taken' for {} photo(s)", updated);
+        return updated;
     }
 
     /** Reads the EXIF "date taken" from an uploaded photo (JPEG/HEIC), or null. */
     private LocalDateTime readTakenAt(MultipartFile f) {
         try (InputStream in = f.getInputStream()) {
-            Metadata md = ImageMetadataReader.readMetadata(in);
-            ExifSubIFDDirectory dir = md.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
-            if (dir != null) {
-                Date d = dir.getDateOriginal();
-                if (d != null) return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault());
-            }
+            return extractTakenAt(in);
         } catch (Exception e) {
             log.debug("No EXIF date for upload {}: {}", f.getOriginalFilename(), e.toString());
+            return null;
+        }
+    }
+
+    private LocalDateTime extractTakenAt(InputStream in) throws Exception {
+        Metadata md = ImageMetadataReader.readMetadata(in);
+        ExifSubIFDDirectory dir = md.getFirstDirectoryOfType(ExifSubIFDDirectory.class);
+        if (dir != null) {
+            Date d = dir.getDateOriginal();
+            if (d != null) return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault());
         }
         return null;
     }
