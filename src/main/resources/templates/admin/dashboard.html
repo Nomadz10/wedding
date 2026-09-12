@@ -34,8 +34,12 @@
                 <div class="lbl">Total invited</div>
             </div>
             <div class="stat">
+                <div class="num" th:text="${stats.roomsNeeded}">0</div>
+                <div class="lbl">Rooms to book<br>(parties + solo)</div>
+            </div>
+            <div class="stat">
                 <div class="num" th:text="${stats.roomsAssigned}">0</div>
-                <div class="lbl">Rooms assigned</div>
+                <div class="lbl">Guests with a room</div>
             </div>
         </div>
 

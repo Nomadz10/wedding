@@ -3,6 +3,9 @@ package com.wedding.controller;
 import com.wedding.config.AdminAuthInterceptor;
 import com.wedding.model.Event;
 import com.wedding.model.Guest;
+import com.wedding.model.Party;
+import com.wedding.repository.PartyRepository;
+import com.wedding.service.ContentPageService;
 import com.wedding.service.EventService;
 import com.wedding.service.FileStorageService;
 import com.wedding.service.GalleryService;
@@ -32,20 +35,26 @@ public class AdminController {
     private final EventService eventService;
     private final FileStorageService fileStorage;
     private final GalleryService galleryService;
+    private final ContentPageService contentPageService;
     private final GuestRepository guestRepository;
     private final EventRepository eventRepository;
+    private final PartyRepository partyRepository;
     private final String adminPassword;
 
     public AdminController(GuestService guestService, EventService eventService,
                            FileStorageService fileStorage, GalleryService galleryService,
+                           ContentPageService contentPageService,
                            GuestRepository guestRepository, EventRepository eventRepository,
+                           PartyRepository partyRepository,
                            @Value("${wedding.admin.password}") String adminPassword) {
         this.guestService = guestService;
         this.eventService = eventService;
         this.fileStorage = fileStorage;
         this.galleryService = galleryService;
+        this.contentPageService = contentPageService;
         this.guestRepository = guestRepository;
         this.eventRepository = eventRepository;
+        this.partyRepository = partyRepository;
         this.adminPassword = adminPassword;
     }
 
@@ -242,6 +251,162 @@ public class AdminController {
         guestRepository.deleteById(id);
         ra.addFlashAttribute("message", "Guest removed.");
         return "redirect:/admin/guests";
+    }
+
+    // ---------- Parties (room-sharing groups) ----------
+
+    @GetMapping("/parties")
+    public String parties(Model model) {
+        List<Guest> all = guestService.all();
+        model.addAttribute("parties", partyRepository.findAllByOrderByNameAsc());
+        model.addAttribute("ungrouped", all.stream().filter(g -> g.getParty() == null).toList());
+        model.addAttribute("roomShareNotes",
+                all.stream().filter(g -> g.getComingWith() != null && !g.getComingWith().isBlank()).toList());
+        model.addAttribute("stats", guestService.stats());
+        return "admin/parties";
+    }
+
+    @PostMapping("/parties")
+    public String createParty(@RequestParam String name, RedirectAttributes ra) {
+        if (name != null && !name.isBlank()) {
+            Party p = new Party();
+            p.setName(name.trim());
+            partyRepository.save(p);
+            ra.addFlashAttribute("message", "Party \"" + p.getName() + "\" created.");
+        }
+        return "redirect:/admin/parties";
+    }
+
+    @PostMapping("/parties/{id}")
+    public String updateParty(@PathVariable Long id,
+                              @RequestParam(required = false) String name,
+                              @RequestParam(required = false) String roomAssignment,
+                              @RequestParam(required = false) String roomDetails,
+                              RedirectAttributes ra) {
+        Party p = partyRepository.findById(id).orElseThrow();
+        if (name != null && !name.isBlank()) p.setName(name.trim());
+        p.setRoomAssignment(blankToNull(roomAssignment));
+        p.setRoomDetails(blankToNull(roomDetails));
+        partyRepository.save(p);
+        ra.addFlashAttribute("message", "Party updated.");
+        return "redirect:/admin/parties";
+    }
+
+    @PostMapping("/parties/{id}/add")
+    public String addPartyMember(@PathVariable Long id, @RequestParam Long guestId, RedirectAttributes ra) {
+        Party p = partyRepository.findById(id).orElseThrow();
+        Guest g = guestRepository.findById(guestId).orElseThrow();
+        g.setParty(p);
+        guestRepository.save(g);
+        return "redirect:/admin/parties";
+    }
+
+    @PostMapping("/parties/{id}/remove")
+    public String removePartyMember(@PathVariable Long id, @RequestParam Long guestId, RedirectAttributes ra) {
+        Guest g = guestRepository.findById(guestId).orElseThrow();
+        g.setParty(null);
+        guestRepository.save(g);
+        return "redirect:/admin/parties";
+    }
+
+    @PostMapping("/parties/{id}/delete")
+    public String deleteParty(@PathVariable Long id, RedirectAttributes ra) {
+        Party p = partyRepository.findById(id).orElseThrow();
+        for (Guest g : new ArrayList<>(p.getMembers())) {
+            g.setParty(null);
+            guestRepository.save(g);
+        }
+        partyRepository.delete(p);
+        ra.addFlashAttribute("message", "Party deleted.");
+        return "redirect:/admin/parties";
+    }
+
+    // ---------- Info pages (visa, travel, things to do, …) ----------
+
+    @GetMapping("/pages")
+    public String pages(Model model) {
+        model.addAttribute("pages", contentPageService.all());
+        return "admin/pages";
+    }
+
+    @GetMapping("/pages/new")
+    public String newPage(Model model) {
+        model.addAttribute("page", new com.wedding.model.ContentPage());
+        model.addAttribute("mode", "new");
+        return "admin/page-form";
+    }
+
+    @GetMapping("/pages/{id}/edit")
+    public String editPage(@PathVariable Long id, Model model) {
+        model.addAttribute("page", contentPageService.byId(id).orElseThrow());
+        model.addAttribute("mode", "edit");
+        return "admin/page-form";
+    }
+
+    @PostMapping("/pages")
+    public String savePage(@RequestParam(required = false) Long id,
+                           @RequestParam String navLabel,
+                           @RequestParam String title,
+                           @RequestParam(required = false) String slug,
+                           @RequestParam(required = false) String subtitle,
+                           @RequestParam(required = false) String body,
+                           @RequestParam(required = false, defaultValue = "0") int displayOrder,
+                           @RequestParam(required = false, defaultValue = "false") boolean published,
+                           RedirectAttributes ra) {
+        com.wedding.model.ContentPage p = (id != null)
+                ? contentPageService.byId(id).orElseGet(com.wedding.model.ContentPage::new)
+                : new com.wedding.model.ContentPage();
+        p.setNavLabel(navLabel.trim());
+        p.setTitle(title.trim());
+        // Derive slug from nav label if none given.
+        p.setSlug((slug == null || slug.isBlank()) ? navLabel : slug);
+        p.setSubtitle(blankToNull(subtitle));
+        p.setBody(body);
+        p.setDisplayOrder(displayOrder);
+        p.setPublished(published);
+        contentPageService.save(p);
+        ra.addFlashAttribute("message", "Page saved.");
+        return "redirect:/admin/pages";
+    }
+
+    @PostMapping("/pages/{id}/delete")
+    public String deletePage(@PathVariable Long id, RedirectAttributes ra) {
+        contentPageService.delete(id);
+        ra.addFlashAttribute("message", "Page deleted.");
+        return "redirect:/admin/pages";
+    }
+
+    // ---------- Mailing addresses (for sending invitations) ----------
+
+    @GetMapping("/addresses")
+    public String addresses(Model model) {
+        model.addAttribute("guests", guestService.withAddresses());
+        return "admin/addresses";
+    }
+
+    @GetMapping(value = "/addresses.csv", produces = "text/csv")
+    @org.springframework.web.bind.annotation.ResponseBody
+    public org.springframework.http.ResponseEntity<String> addressesCsv() {
+        StringBuilder sb = new StringBuilder("First Name,Last Name,Plus One,Mailing Address\n");
+        for (Guest g : guestService.withAddresses()) {
+            sb.append(csv(g.getFirstName())).append(',')
+              .append(csv(g.getLastName())).append(',')
+              .append(csv(g.isBringingPlusOne() ? g.getPlusOneName() : "")).append(',')
+              .append(csv(g.getMailingAddress())).append('\n');
+        }
+        return org.springframework.http.ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=\"wedding-addresses.csv\"")
+                .body(sb.toString());
+    }
+
+    /** Minimal CSV field escaping. */
+    private static String csv(String s) {
+        if (s == null) return "";
+        String v = s.replace("\r", " ").replace("\n", " ").trim();
+        if (v.contains(",") || v.contains("\"")) {
+            v = "\"" + v.replace("\"", "\"\"") + "\"";
+        }
+        return v;
     }
 
     // ---------- Guest photo wall ----------

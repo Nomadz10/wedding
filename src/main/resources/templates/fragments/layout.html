@@ -20,6 +20,7 @@
             <a th:href="@{/}">Home</a>
             <a th:href="@{/events}">Events</a>
             <a th:href="@{/gallery}">Photos</a>
+            <a th:each="np : ${navPages}" th:href="@{'/info/' + ${np.slug}}" th:text="${np.navLabel}">Info</a>
             <a th:if="${rsvpEnabled}" class="cta" th:href="@{/rsvp}">RSVP</a>
         </div>
     </div>

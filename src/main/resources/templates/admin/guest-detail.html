@@ -25,6 +25,10 @@
             <div class="card mb">
                 <h3>Accommodation</h3>
                 <p class="muted" style="font-size:.85rem;">Fill this in once the hotel is booked. It becomes visible to the guest when they log in.</p>
+                <p th:if="${guest.party != null}" class="alert info" style="font-size:.85rem;">
+                    This guest is in the party <strong th:text="${guest.party.name}">party</strong> —
+                    their room is set on the <a th:href="@{/admin/parties}">Parties &amp; Rooms</a> page and takes priority over the field below.
+                </p>
                 <label for="roomAssignment">Room assignment</label>
                 <input type="text" id="roomAssignment" name="roomAssignment" th:value="${guest.roomAssignment}" placeholder="e.g. Room 214, Grand Hotel">
                 <label for="roomDetails">Details (hotel, check-in, notes)</label>

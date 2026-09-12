@@ -93,6 +93,8 @@ public class RsvpController {
                          @RequestParam(required = false, defaultValue = "false") boolean bringingPlusOne,
                          @RequestParam(required = false) String plusOneName,
                          @RequestParam(required = false) String notes,
+                         @RequestParam(required = false) String mailingAddress,
+                         @RequestParam(required = false) String comingWith,
                          Model model) {
         if (!rsvpEnabled) return "redirect:/";
         Guest guest = currentGuest(session);
@@ -107,6 +109,14 @@ public class RsvpController {
 
         RsvpStatus status = "yes".equalsIgnoreCase(attending) ? RsvpStatus.ATTENDING : RsvpStatus.DECLINED;
 
+        // Address is required so we can send invitations.
+        if (mailingAddress == null || mailingAddress.trim().isEmpty()) {
+            model.addAttribute("guest", guest);
+            model.addAttribute("error", "Please enter your mailing address so we can send your invitation.");
+            model.addAttribute("attempted", attending);
+            return "rsvp-form";
+        }
+
         // If they're bringing a plus-one they must name them.
         if (status == RsvpStatus.ATTENDING && bringingPlusOne
                 && (plusOneName == null || plusOneName.trim().isEmpty())) {
@@ -115,7 +125,7 @@ public class RsvpController {
             return "rsvp-form";
         }
 
-        guestService.saveRsvp(guest.getId(), status, bringingPlusOne, plusOneName, notes);
+        guestService.saveRsvp(guest.getId(), status, bringingPlusOne, plusOneName, notes, mailingAddress, comingWith);
         return "redirect:/rsvp?saved";
     }
 

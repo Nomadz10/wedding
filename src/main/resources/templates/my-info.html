@@ -16,10 +16,13 @@
             <div th:if="${guest.roomBooked}">
                 <h3>&#127976; Where you're staying</h3>
                 <div class="stack" style="margin:10px 0 26px;">
-                    <p><strong th:text="${guest.roomAssignment}">Room 214</strong></p>
-                    <p class="muted" th:if="${guest.roomDetails != null}" th:text="${guest.roomDetails}"
+                    <p><strong th:text="${guest.effectiveRoomAssignment}">Room 214</strong></p>
+                    <p class="muted" th:if="${guest.effectiveRoomDetails != null}" th:text="${guest.effectiveRoomDetails}"
                        style="white-space:pre-line;">Grand Hotel, check-in Fri 3pm</p>
-                    <p class="muted" th:if="${guest.bringingPlusOne}">
+                    <p class="muted" th:if="${guest.party != null}">
+                        Reserved for your group: <span th:text="${guest.party.name}">your party</span>.
+                    </p>
+                    <p class="muted" th:if="${guest.party == null and guest.bringingPlusOne}">
                         Reserved for you and <span th:text="${guest.plusOneName}">your plus-one</span>.
                     </p>
                 </div>

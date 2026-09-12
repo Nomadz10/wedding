@@ -38,15 +38,26 @@ public class GuestService {
 
     @Transactional
     public Guest saveRsvp(Long guestId, RsvpStatus status, boolean bringingPlusOne,
-                          String plusOneName, String notes) {
+                          String plusOneName, String notes, String mailingAddress, String comingWith) {
         Guest g = guests.findById(guestId).orElseThrow();
         g.setRsvpStatus(status);
         boolean plusOne = status == RsvpStatus.ATTENDING && bringingPlusOne;
         g.setBringingPlusOne(plusOne);
         g.setPlusOneName(plusOne ? (plusOneName == null ? null : plusOneName.trim()) : null);
         g.setNotes(notes == null ? null : notes.trim());
+        g.setComingWith(comingWith == null || comingWith.isBlank() ? null : comingWith.trim());
+        if (mailingAddress != null && !mailingAddress.isBlank()) {
+            g.setMailingAddress(mailingAddress.trim());
+        }
         g.setRespondedAt(LocalDateTime.now());
         return guests.save(g);
+    }
+
+    /** Guests who have given us a mailing address, for sending invitations. */
+    public List<Guest> withAddresses() {
+        return guests.findAllByOrderByLastNameAscFirstNameAsc().stream()
+                .filter(g -> g.getMailingAddress() != null && !g.getMailingAddress().isBlank())
+                .toList();
     }
 
     // ---- Admin stats used for hotel/catering planning ----
@@ -54,19 +65,27 @@ public class GuestService {
     public Stats stats() {
         List<Guest> all = guests.findAll();
         long attending = 0, declined = 0, pending = 0, plusOnes = 0, roomsAssigned = 0;
+        java.util.Set<Long> attendingPartyIds = new java.util.HashSet<>();
+        long soloAttending = 0;   // attending guests not in a party
         for (Guest g : all) {
             switch (g.getRsvpStatus()) {
                 case ATTENDING -> attending++;
                 case DECLINED -> declined++;
                 case PENDING -> pending++;
             }
-            if (g.getRsvpStatus() == RsvpStatus.ATTENDING && g.isBringingPlusOne()) plusOnes++;
+            if (g.getRsvpStatus() == RsvpStatus.ATTENDING) {
+                if (g.isBringingPlusOne()) plusOnes++;
+                if (g.getParty() != null) attendingPartyIds.add(g.getParty().getId());
+                else soloAttending++;
+            }
             if (g.isRoomBooked()) roomsAssigned++;
         }
         long headcount = attending + plusOnes; // total bodies to house/feed
-        return new Stats(all.size(), attending, declined, pending, plusOnes, headcount, roomsAssigned);
+        // Rooms to book: one per attending party + one per attending solo guest.
+        long roomsNeeded = attendingPartyIds.size() + soloAttending;
+        return new Stats(all.size(), attending, declined, pending, plusOnes, headcount, roomsAssigned, roomsNeeded);
     }
 
     public record Stats(long invited, long attending, long declined, long pending,
-                        long plusOnes, long totalHeadcount, long roomsAssigned) {}
+                        long plusOnes, long totalHeadcount, long roomsAssigned, long roomsNeeded) {}
 }

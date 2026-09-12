@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${page.title} + ' · Our Wedding')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+
+<section class="section">
+    <div class="container narrow">
+        <div class="section-title">
+            <p class="eyebrow" th:text="${page.navLabel}">Info</p>
+            <h2 th:text="${page.title}">Title</h2>
+            <p class="muted" th:if="${!#strings.isEmpty(page.subtitle)}" th:text="${page.subtitle}">Subtitle</p>
+        </div>
+        <div class="event-desc" style="font-size:1.02rem;" th:utext="${page.body}">Content goes here.</div>
+    </div>
+</section>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

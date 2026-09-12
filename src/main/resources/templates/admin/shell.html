@@ -13,7 +13,10 @@
     <div class="logo">Wedding Admin</div>
     <a th:href="@{/admin}" th:classappend="${active == 'dashboard'} ? 'active'">Dashboard</a>
     <a th:href="@{/admin/guests}" th:classappend="${active == 'guests'} ? 'active'">Guests &amp; RSVPs</a>
+    <a th:href="@{/admin/parties}" th:classappend="${active == 'parties'} ? 'active'">Parties &amp; Rooms</a>
+    <a th:href="@{/admin/addresses}" th:classappend="${active == 'addresses'} ? 'active'">Addresses</a>
     <a th:href="@{/admin/events}" th:classappend="${active == 'events'} ? 'active'">Events</a>
+    <a th:href="@{/admin/pages}" th:classappend="${active == 'pages'} ? 'active'">Info Pages</a>
     <a th:href="@{/admin/gallery}" th:classappend="${active == 'gallery'} ? 'active'">Photo Wall</a>
     <a th:href="@{/}">View site &#8599;</a>
     <a th:href="@{/admin/logout}">Sign out</a>

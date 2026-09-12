@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Parties & Rooms')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('parties')}"></aside>
+    <main class="admin-main">
+        <h1>Parties &amp; Rooms</h1>
+        <p class="muted">Group guests who share one hotel room (couples, families, friends). Each party = one room to book.</p>
+
+        <div th:if="${message}" class="alert success" th:text="${message}"></div>
+
+        <div class="stat-grid">
+            <div class="stat hl"><div class="num" th:text="${stats.roomsNeeded}">0</div><div class="lbl">Rooms to book</div></div>
+            <div class="stat"><div class="num" th:text="${stats.attending}">0</div><div class="lbl">Attending guests</div></div>
+            <div class="stat"><div class="num" th:text="${stats.roomsAssigned}">0</div><div class="lbl">Guests with a room</div></div>
+        </div>
+
+        <!-- Room-share hints from guests' RSVPs -->
+        <div class="card mb" th:if="${!roomShareNotes.isEmpty()}">
+            <h3>&#128172; Guests who said who they're with</h3>
+            <p class="muted" style="font-size:.85rem;">Use these hints to group people into parties below.</p>
+            <div class="table-wrap">
+            <table>
+                <thead><tr><th>Guest</th><th>Coming with</th><th>Party</th></tr></thead>
+                <tbody>
+                <tr th:each="g : ${roomShareNotes}">
+                    <td th:text="${g.firstName} + ' ' + ${g.lastName}">Name</td>
+                    <td th:text="${g.comingWith}">partner name</td>
+                    <td th:text="${g.party != null} ? ${g.party.name} : '—'">—</td>
+                </tr>
+                </tbody>
+            </table>
+            </div>
+        </div>
+
+        <!-- Create a new party -->
+        <div class="card mb">
+            <h3>Create a party</h3>
+            <form th:action="@{/admin/parties}" method="post" class="row" style="align-items:flex-end;">
+                <div style="flex:2;">
+                    <label for="name">Party name</label>
+                    <input type="text" id="name" name="name" placeholder="e.g. Chris &amp; Christine Dang" required>
+                </div>
+                <div><button type="submit" class="btn small">Create</button></div>
+            </form>
+        </div>
+
+        <!-- Existing parties -->
+        <div class="card mb" th:each="p : ${parties}">
+            <div class="toolbar">
+                <h3 style="margin:0;" th:text="${p.name}">Party name</h3>
+                <form th:action="@{'/admin/parties/' + ${p.id} + '/delete'}" method="post" class="inline-form"
+                      onsubmit="return confirm('Delete this party? Members become ungrouped.');">
+                    <button type="submit" class="btn small danger">Delete party</button>
+                </form>
+            </div>
+
+            <!-- members -->
+            <p th:if="${p.members.isEmpty()}" class="muted">No members yet.</p>
+            <ul style="list-style:none;padding:0;margin:0 0 12px;">
+                <li th:each="m : ${p.members}" style="display:flex;align-items:center;gap:10px;padding:4px 0;">
+                    <span th:text="${m.firstName} + ' ' + ${m.lastName}">Member</span>
+                    <span class="pill" th:classappend="${m.rsvpStatus.name()=='ATTENDING'} ? 'yes' : (${m.rsvpStatus.name()=='DECLINED'} ? 'no' : 'pending')"
+                          th:text="${m.rsvpStatus.name()=='ATTENDING'} ? 'Attending' : (${m.rsvpStatus.name()=='DECLINED'} ? 'Declined' : 'Pending')">Pending</span>
+                    <form th:action="@{'/admin/parties/' + ${p.id} + '/remove'}" method="post" class="inline-form">
+                        <input type="hidden" name="guestId" th:value="${m.id}">
+                        <button type="submit" class="btn small outline" style="padding:2px 8px;">Remove</button>
+                    </form>
+                </li>
+            </ul>
+
+            <!-- add a member -->
+            <form th:action="@{'/admin/parties/' + ${p.id} + '/add'}" method="post" class="row" style="align-items:flex-end;margin-bottom:14px;"
+                  th:if="${!ungrouped.isEmpty()}">
+                <div style="flex:2;">
+                    <label>Add a guest</label>
+                    <select name="guestId" required>
+                        <option value="" disabled selected>Choose a guest…</option>
+                        <option th:each="u : ${ungrouped}" th:value="${u.id}"
+                                th:text="${u.firstName} + ' ' + ${u.lastName}">Guest</option>
+                    </select>
+                </div>
+                <div><button type="submit" class="btn small outline">Add</button></div>
+            </form>
+
+            <!-- room for the whole party -->
+            <form th:action="@{'/admin/parties/' + ${p.id}}" method="post" style="border-top:1px solid var(--line);padding-top:12px;">
+                <div class="row">
+                    <div>
+                        <label>Room assignment</label>
+                        <input type="text" name="roomAssignment" th:value="${p.roomAssignment}" placeholder="e.g. Room 214, Grand Hotel">
+                    </div>
+                </div>
+                <label>Room details</label>
+                <textarea name="roomDetails" th:text="${p.roomDetails}" placeholder="Grand Hotel — check-in Fri 3pm"></textarea>
+                <div class="mt"><button type="submit" class="btn small">Save room</button></div>
+            </form>
+        </div>
+        <p th:if="${parties.isEmpty()}" class="muted">No parties yet — create one above.</p>
+    </main>
+</div>
+</body>
+</html>

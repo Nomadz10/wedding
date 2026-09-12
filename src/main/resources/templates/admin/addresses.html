@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Addresses')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('addresses')}"></aside>
+    <main class="admin-main">
+        <div class="toolbar">
+            <h1 style="margin:0;">Mailing Addresses</h1>
+            <a class="btn small" th:href="@{/admin/addresses.csv}">Download CSV</a>
+        </div>
+        <p class="muted">Everyone who has given a mailing address on their RSVP, for sending invitations.</p>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+            <tr><th>Name</th><th>Plus-one</th><th>Mailing address</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="g : ${guests}">
+                <td th:text="${g.firstName} + ' ' + ${g.lastName}">Name</td>
+                <td th:text="${g.bringingPlusOne} ? ${g.plusOneName} : '—'">—</td>
+                <td style="white-space:pre-line;" th:text="${g.mailingAddress}">Address</td>
+            </tr>
+            <tr th:if="${guests.isEmpty()}"><td colspan="3" class="center muted">No addresses collected yet.</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

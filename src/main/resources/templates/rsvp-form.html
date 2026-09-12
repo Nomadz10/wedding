@@ -59,6 +59,17 @@
                     </div>
                 </div>
 
+                <label for="mailingAddress">Your mailing address *
+                    <span class="muted" style="text-transform:none;letter-spacing:0;">— so we can post your invitation</span></label>
+                <textarea id="mailingAddress" name="mailingAddress" required
+                          th:text="${guest.mailingAddress}"
+                          placeholder="Street, City, State, ZIP, Country"></textarea>
+
+                <label for="comingWith">Sharing a room with another guest? (optional)
+                    <span class="muted" style="text-transform:none;letter-spacing:0;">— tell us who so we book one room for you</span></label>
+                <input type="text" id="comingWith" name="comingWith" th:value="${guest.comingWith}"
+                       placeholder="e.g. My partner Priya Sharma">
+
                 <label for="notes">Dietary needs or notes (optional)</label>
                 <textarea id="notes" name="notes" th:text="${guest.notes}"
                           placeholder="Allergies, accessibility needs, song requests…"></textarea>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{admin/shell :: head('Info Pages')}"></head>
+<body>
+<div class="admin-shell">
+    <aside th:replace="~{admin/shell :: side('pages')}"></aside>
+    <main class="admin-main">
+        <div class="toolbar">
+            <h1 style="margin:0;">Info Pages</h1>
+            <a class="btn small" th:href="@{/admin/pages/new}">+ Add page</a>
+        </div>
+        <p class="muted">Tabs shown in the site navigation (visa info, travel tips, things to do, …).</p>
+
+        <div th:if="${message}" class="alert success" th:text="${message}"></div>
+
+        <div class="table-wrap">
+        <table>
+            <thead>
+            <tr><th>Order</th><th>Nav label</th><th>Title</th><th>URL</th><th>Shown?</th><th></th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${pages}">
+                <td th:text="${p.displayOrder}">1</td>
+                <td th:text="${p.navLabel}">Visa</td>
+                <td th:text="${p.title}">Title</td>
+                <td><a th:href="@{'/info/' + ${p.slug}}" th:text="'/info/' + ${p.slug}" target="_blank">/info/visa</a></td>
+                <td><span th:text="${p.published} ? 'Yes' : 'Hidden'" th:classappend="${p.published} ? 'pill yes' : 'pill no'" class="pill">Yes</span></td>
+                <td>
+                    <a class="btn small outline" th:href="@{'/admin/pages/' + ${p.id} + '/edit'}">Edit</a>
+                    <form class="inline-form" th:action="@{'/admin/pages/' + ${p.id} + '/delete'}" method="post"
+                          onsubmit="return confirm('Delete this page?');">
+                        <button type="submit" class="btn small danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${pages.isEmpty()}"><td colspan="6" class="center muted">No pages yet.</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </main>
+</div>
+</body>
+</html>

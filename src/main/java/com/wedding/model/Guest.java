@@ -47,6 +47,19 @@ public class Guest {
     @Column(length = 1000)
     private String notes;
 
+    /** Mailing address, collected at RSVP time so the couple can send invites. */
+    @Column(length = 1000)
+    private String mailingAddress;
+
+    /** Free-text hint from the guest: who they're coming with / sharing a room with. */
+    @Column(length = 500)
+    private String comingWith;
+
+    /** The party (room-sharing group) this guest belongs to, or null if solo. */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "party_id")
+    private Party party;
+
     // ---- Filled in by the admin AFTER the hotel is booked ----
 
     /** e.g. "Room 214" — null until assigned. Presence means "hotel booked". */
@@ -72,7 +85,17 @@ public class Guest {
     }
 
     public boolean isRoomBooked() {
+        if (party != null && party.isRoomBooked()) return true;
         return roomAssignment != null && !roomAssignment.isBlank();
+    }
+
+    /** Room shown to the guest — the party's room if grouped, otherwise their own. */
+    public String getEffectiveRoomAssignment() {
+        return (party != null && party.isRoomBooked()) ? party.getRoomAssignment() : roomAssignment;
+    }
+
+    public String getEffectiveRoomDetails() {
+        return (party != null && party.isRoomBooked()) ? party.getRoomDetails() : roomDetails;
     }
 
     /** Headcount this guest represents for hotel/catering: self + plus-one. */
@@ -115,6 +138,15 @@ public class Guest {
 
     public String getNotes() { return notes; }
     public void setNotes(String notes) { this.notes = notes; }
+
+    public String getMailingAddress() { return mailingAddress; }
+    public void setMailingAddress(String mailingAddress) { this.mailingAddress = mailingAddress; }
+
+    public String getComingWith() { return comingWith; }
+    public void setComingWith(String comingWith) { this.comingWith = comingWith; }
+
+    public Party getParty() { return party; }
+    public void setParty(Party party) { this.party = party; }
 
     public String getRoomAssignment() { return roomAssignment; }
     public void setRoomAssignment(String roomAssignment) { this.roomAssignment = roomAssignment; }
