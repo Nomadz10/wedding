@@ -358,12 +358,39 @@ a:hover { text-decoration: underline; }
     box-shadow: var(--shadow); background: linear-gradient(135deg, #efe7da, #f7f1e8);
 }
 .ss-card img {
-    height: clamp(180px, 24vw, 260px); width: auto; display: block; border-radius: 10px;
+    height: clamp(300px, 60vh, 620px); width: auto; display: block; border-radius: 10px;
 }
 .ss-card:nth-child(4n+1) { background: linear-gradient(135deg, #f3d7dd, #faf1f2); } /* blush */
 .ss-card:nth-child(4n+2) { background: linear-gradient(135deg, #f6e4c8, #fdf6ea); } /* marigold */
 .ss-card:nth-child(4n+3) { background: linear-gradient(135deg, #d6e8e3, #eef7f4); } /* teal */
 .ss-card:nth-child(4n)   { background: linear-gradient(135deg, #efe1c4, #f9f2e2); } /* gold */
+
+/* ---------- "Our Moments" full-width photo band with overlaid title ---------- */
+.moments-section { padding: 40px 0 60px; }
+.moments-band { position: relative; width: 100%; overflow: hidden; }
+.moments-band .slideshow { max-width: none; }
+/* the overlaid title, floated in the centre over the moving photos */
+.moments-overlay {
+    position: absolute; inset: 0; z-index: 3; pointer-events: none;
+    display: flex; align-items: center; justify-content: center; text-align: center;
+}
+.moments-overlay-inner {
+    background: rgba(250, 247, 242, 0.72);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.6);
+    padding: 20px clamp(28px, 5vw, 64px); border-radius: 18px; box-shadow: var(--shadow-lg);
+}
+.moments-overlay-inner .eyebrow {
+    text-transform: uppercase; letter-spacing: 3px; color: var(--accent-dark); font-size: 0.78rem;
+}
+.moments-overlay-inner h2 { margin: 4px 0 0; }
+/* placeholder tiles fill the tall band when there are no photos yet */
+.moments-empty { grid-template-columns: repeat(4, 1fr); max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+.moments-empty .tile { aspect-ratio: auto; height: clamp(300px, 60vh, 620px); }
+@media (max-width: 760px) {
+    .moments-empty { grid-template-columns: repeat(2, 1fr); }
+    .moments-empty .tile { height: clamp(200px, 40vh, 300px); }
+}
 
 /* ---------- Cards / forms ---------- */
 .card {

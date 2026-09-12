@@ -54,17 +54,10 @@
     </div>
 </section>
 
-<section class="section">
-    <div class="container">
-        <div class="section-title">
-            <p class="eyebrow">A few of our favourites</p>
-            <h2>Our Moments</h2>
-            <p class="muted" style="max-width:520px;margin:0 auto;">
-                Captured a moment? Add it to our photo wall &mdash; scan the QR code at the wedding or tap below.
-            </p>
-        </div>
-
-        <!-- Continuous marquee of colored photo cards sliding right-to-left. -->
+<section class="moments-section">
+    <!-- Full-width tall photo band with the title floated on top. -->
+    <div class="moments-band">
+        <!-- Continuous marquee of large photos sliding right-to-left. -->
         <div class="slideshow" th:if="${!galleryPhotos.isEmpty()}" id="slideshow">
             <div class="ss-viewport">
                 <div class="ss-track" id="ssTrack">
@@ -76,13 +69,26 @@
         </div>
 
         <!-- Placeholders until there are featured photos. -->
-        <div class="gallery" th:if="${galleryPhotos.isEmpty()}">
+        <div class="gallery moments-empty" th:if="${galleryPhotos.isEmpty()}">
             <div class="tile placeholder"></div>
             <div class="tile placeholder"></div>
             <div class="tile placeholder"></div>
             <div class="tile placeholder"></div>
         </div>
 
+        <!-- Overlaid title -->
+        <div class="moments-overlay">
+            <div class="moments-overlay-inner">
+                <p class="eyebrow">A few of our favourites</p>
+                <h2>Our Moments</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="container center">
+        <p class="muted" style="max-width:520px;margin:22px auto 0;">
+            Captured a moment? Add it to our photo wall &mdash; scan the QR code at the wedding or tap below.
+        </p>
         <p class="center mt">
             <a class="btn" th:href="@{/share}">&#128247; Add your photos</a>
             <a class="btn outline" th:href="@{/gallery}">View the photo wall</a>
